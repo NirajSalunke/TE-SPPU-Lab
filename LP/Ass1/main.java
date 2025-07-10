@@ -1,7 +1,9 @@
+package LP.Ass1;
+
 import java.util.ArrayList;
 import java.util.Scanner;
-// name your file as main.java
-public class Main {
+
+class Main {
 
     enum WorkerStatus {
         WAITING,
