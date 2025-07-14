@@ -1,4 +1,4 @@
-package Ass2;
+package FCFS;
 
 import java.util.*;
 
@@ -107,3 +107,12 @@ public class Main {
 
     }
 }
+/*
+
+Number of processes: 3
+
+P1: Arrival time = 0, Burst time = 2  
+P2: Arrival time = 5, Burst time = 3  
+P3: Arrival time = 6, Burst time = 1
+
+ */
