@@ -3,9 +3,9 @@ DROP TABLE IF EXISTS Students;
 DROP TABLE IF EXISTS Results;
 
 CREATE TABLE Students (
-    rollNo INT PRIMARY KEY,
-    NameOfStud VARCHAR(500) NOT NULL,
-    totalMarks BIGINT NOT NULL DEFAULT 0
+    rollNo INT PRIMARY KEY CHECK (rollNo > 0),
+    nameOfStud VARCHAR(500) NOT NULL,
+    totalMarks BIGINT NOT NULL DEFAULT 0 
 )
 
 CREATE TABLE Results (
@@ -14,23 +14,41 @@ CREATE TABLE Results (
     FOREIGN KEY (studentId) REFERENCES Students (rollNo) ON DELETE CASCADE
 )
 
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS proc_grade;
 DELIMITER //
 
 CREATE PROCEDURE proc_grade(IN roll INT)
 BEGIN
-    DECLARE marks BIGINT;
+    DECLARE marks BIGINT DEFAULT NULL;
+    DECLARE nameStud VARCHAR(500) DEFAULT NULL;
     DECLARE clasI VARCHAR(500);
+    DECLARE error_msg VARCHAR(500);
+    DECLARE done BOOLEAN DEFAULT FALSE;
+
 
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-        SELECT 'Invalid marks' AS Message;
+        GET DIAGNOSTICS CONDITION 1 error_msg = MESSAGE_TEXT;
+        SELECT error_msg AS Message;
     END;
 
-    SELECT totalMarks INTO marks FROM Students WHERE rollNo = roll;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    IF roll <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid rollNo';
+    END IF;
+
+
+    SELECT totalMarks, nameOfStud INTO marks, nameStud FROM Students WHERE rollNo = roll;
+
+    IF done THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student not found';
+    END IF;
 
     IF marks > 1500 THEN
-        SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Invalid marks';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid marks';
     END IF;
 
     IF marks >= 990 THEN
@@ -43,7 +61,7 @@ BEGIN
         SET clasI = 'Fail';
     END IF;
 
-    INSERT INTO Results(studentId, clas) VALUES(roll, clasI);
+    INSERT INTO Results(studentId, clas) VALUES (roll, clasI);
 
     SELECT 'Result Calculated Successfully' AS Message;
 END;
@@ -62,7 +80,8 @@ VALUES (1, 'Alice', 995),
     (3, 'Charlie', 840),
     (4, 'David', 700),
     (5, 'Eva', 1501),
-    (6, 'Frank', 990);
+    (6, 'Frank', 990),
+    (7, 'Frank', -1);
 
 SELECT * FROM `Students`;
 SELECT * FROM `Results`;                                                        
@@ -71,8 +90,10 @@ SELECT * FROM `Results`;
 TRUNCATE TABLE `Results`;
 
 CALL proc_grade(1);
-CALL proc_grade(2);
+CALL proc_grade(-2);
 CALL proc_grade(3);
 CALL proc_grade(4);
 CALL proc_grade(5);
-CALL proc_grade(6);
+CALL proc_grade(10);
+
+-- SELECT totalMarks FROM Students WHERE `rollNo` = 10;
