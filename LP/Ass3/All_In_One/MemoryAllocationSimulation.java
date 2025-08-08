@@ -37,7 +37,6 @@ public class MemoryAllocationSimulation {
     public static void main(String[] args) throws InterruptedException {
         Scanner sc = new Scanner(System.in);
 
-        // Input phase
         System.out.print("Enter number of memory blocks: ");
         int m = sc.nextInt();
         int[] memoryBlocks = new int[m];
@@ -61,7 +60,7 @@ public class MemoryAllocationSimulation {
         processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
 
         while (true) {
-            // Strategy selection
+
             System.out.println("\nChoose allocation strategy:");
             System.out.println("1. First Fit");
             System.out.println("2. Next Fit");
@@ -71,20 +70,27 @@ public class MemoryAllocationSimulation {
             System.out.print("Enter choice [1-5]: ");
             int choice = sc.nextInt();
             if (choice == 5) {
-                // System.out.println("Exiting simulation. Goodbye!");
                 break;
             }
             Strategy strat;
             switch (choice) {
-                case 1: strat = Strategy.FIRST_FIT; break;
-                case 2: strat = Strategy.NEXT_FIT; break;
-                case 3: strat = Strategy.WORST_FIT; break;
-                case 4: strat = Strategy.BEST_FIT; break;
+                case 1:
+                    strat = Strategy.FIRST_FIT;
+                    break;
+                case 2:
+                    strat = Strategy.NEXT_FIT;
+                    break;
+                case 3:
+                    strat = Strategy.WORST_FIT;
+                    break;
+                case 4:
+                    strat = Strategy.BEST_FIT;
+                    break;
                 default:
                     System.out.println("Invalid choice, please try again.");
                     continue;
             }
-            // Reset process states
+
             for (Process p : processes) {
                 p.remainingTime = p.burstTime;
                 p.startTime = -1;
@@ -95,7 +101,7 @@ public class MemoryAllocationSimulation {
                 p.isCompleted = false;
                 p.isAllocated = false;
             }
-            // Simulate
+
             simulate(processes, memoryBlocks, strat);
         }
         sc.close();
@@ -107,10 +113,10 @@ public class MemoryAllocationSimulation {
         boolean[] blockOccupied = new boolean[memoryBlocks.length];
         int nextFitPointer = 0;
 
-        System.out.println("\n--- " + strat.toString().replace('_',' ') + " Simulation ---\n");
+        System.out.println("\n--- " + strat.toString().replace('_', ' ') + " Simulation ---\n");
 
         while (completed < processes.size()) {
-            // Allocation phase
+
             for (Process p : processes) {
                 if (p.arrivalTime <= time && !p.isAllocated && !p.isCompleted) {
                     int chosenBlock = -1;
@@ -163,7 +169,7 @@ public class MemoryAllocationSimulation {
                         p.allocatedBlock = chosenBlock;
                         p.isAllocated = true;
                         System.out.println("Time " + time + ": P" + p.pid +
-                                           " allocated to Block " + (chosenBlock + 1));
+                                " allocated to Block " + (chosenBlock + 1));
                     } else {
                         System.out.println("Time " + time + ": P" + p.pid + " waiting for memory.");
                     }
@@ -180,10 +186,12 @@ public class MemoryAllocationSimulation {
                     System.out.print("Time " + time + ": ");
                     for (Process q : processes) {
                         if (q.arrivalTime <= time && !q.isCompleted) {
-                            if (q == p)      System.out.print("[P" + q.pid + ": RUNNING] ");
+                            if (q == p)
+                                System.out.print("[P" + q.pid + ": RUNNING] ");
                             else if (!q.isAllocated)
-                                              System.out.print("[P" + q.pid + ": WAITING for memory] ");
-                            else            System.out.print("[P" + q.pid + ": WAITING for CPU] ");
+                                System.out.print("[P" + q.pid + ": WAITING for memory] ");
+                            else
+                                System.out.print("[P" + q.pid + ": WAITING for CPU] ");
                         }
                     }
                     System.out.println();
@@ -196,8 +204,8 @@ public class MemoryAllocationSimulation {
                         p.waitingTime = p.turnaroundTime - p.burstTime;
                         blockOccupied[p.allocatedBlock] = false;
                         System.out.println("Time " + (time + 1) +
-                                           ": P" + p.pid + " completed. Block " +
-                                           (p.allocatedBlock + 1) + " released.\n");
+                                ": P" + p.pid + " completed. Block " +
+                                (p.allocatedBlock + 1) + " released.\n");
                         completed++;
                     }
                     break;
@@ -206,32 +214,62 @@ public class MemoryAllocationSimulation {
             if (!ran) {
                 System.out.println("Time " + time + ": CPU is IDLE.");
             }
+
+            // ---- PRINT BLOCK STATUS TABLE HERE ----
+            System.out.println("\nCurrent Memory Block Status:");
+            System.out.printf("%-8s %-10s %-12s %-14s %-14s\n",
+                    "BlockNo", "Status", "Process", "Block Size", "Memory Left");
+            for (int i = 0; i < memoryBlocks.length; i++) {
+                String status, proc;
+                int memLeft;
+                // Find if any process is occupying this block
+                Process owner = null;
+                for (Process p : processes) {
+                    if (p.allocatedBlock == i && p.isAllocated && !p.isCompleted) {
+                        owner = p;
+                        break;
+                    }
+                }
+                if (owner != null) {
+                    status = "OCCUPIED";
+                    proc = "P" + owner.pid;
+                    memLeft = memoryBlocks[i] - owner.memoryRequired;
+                } else {
+                    status = "FREE";
+                    proc = "-";
+                    memLeft = memoryBlocks[i];
+                }
+                System.out.printf("%-8d %-10s %-12s %-14d %-14d\n",
+                        (i + 1), status, proc, memoryBlocks[i], memLeft);
+            }
+            System.out.println();
+            // ---- END TABLE ----
+
             Thread.sleep(500);
             time++;
         }
 
         System.out.println("--- Summary ---");
         System.out.printf("%-6s %-8s %-8s %-12s %-8s %-12s %-8s\n",
-                          "PID", "Arrival", "Burst", "MemReq", "Start", "Turnaround", "Waiting");
+                "PID", "Arrival", "Burst", "MemReq", "Start", "Turnaround", "Waiting");
         for (Process p : processes) {
             System.out.printf("P%-5d %-8d %-8d %-12d %-8d %-12d %-8d\n",
-                              p.pid, p.arrivalTime, p.burstTime,
-                              p.memoryRequired, p.startTime,
-                              p.turnaroundTime, p.waitingTime);
+                    p.pid, p.arrivalTime, p.burstTime,
+                    p.memoryRequired, p.startTime,
+                    p.turnaroundTime, p.waitingTime);
         }
     }
+
 }
 
-
 /*
-Blocks: [100, 300, 200, 400]
-| PID | Arrival | Burst | MemReq |
-
-|-----|---------|-------|--------|
-| P1  | 0       | 2     | 120    |
-| P2  | 0       | 3     | 280    |
-| P3  | 1       | 1     | 100    |
-| P4  | 2       | 2     | 350    |
-
-
+ * Blocks: [100, 300, 200, 400]
+ * | PID | Arrival | Burst | MemReq |
+ * 
+ * |-----|---------|-------|--------|
+ * | P1 | 0 | 2 | 120 |
+ * | P2 | 0 | 3 | 280 |
+ * | P3 | 1 | 1 | 100 |
+ * | P4 | 2 | 2 | 350 |
+ * 
  */
