@@ -1,488 +1,594 @@
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
-import java.util.regex.*;
 
-/**
- * TwoPassAssembler.java
- *
- * Usage:
- *   javac TwoPassAssembler.java
- *   java TwoPassAssembler sample.asm
- *
- * Output files:
- *   intermediate.txt
- *   literals.txt
- *   pool.txt
- *   symboltable.txt
- *   machinecode.txt
- */
+import java.io.*;
+import java.util.*;
+
 public class TwoPassAssembler {
 
-    // Maps & lists for symbol/literal tables
-    static class Symbol {
-        String name;
-        int address;
-        int index;
-        Symbol(String n, int idx) { name = n; address = -1; index = idx; }
-    }
-    static class Literal {
-        String literal; // e.g. =5 or = '5' stored as raw (without =)
-        int address;
-        int index;
-        Literal(String l, int idx) { literal = l; address = -1; index = idx; }
+    static class OpTabEntry {
+        String type;
+        String opcode;
+
+        OpTabEntry(String type, String opcode) {
+            this.type = type;
+            this.opcode = opcode;
+        }
     }
 
-    static Map<String,Integer> isOpcode = new HashMap<>(); // Imperative statements
-    static Map<String,Integer> adOpcode = new HashMap<>(); // Assembler directives
-    static Map<String,Integer> dlOpcode = new HashMap<>(); // Declaratives
-    static Map<String,Integer> regCode = new HashMap<>();
+    static class SymTabEntry {
+        String symbol;
+        int address;
 
-    static List<Symbol> symTable = new ArrayList<>();
-    static Map<String, Symbol> symMap = new HashMap<>(); // name -> Symbol
+        SymTabEntry(String symbol, int address) {
+            this.symbol = symbol;
+            this.address = address;
+        }
+    }
 
-    static List<Literal> litTable = new ArrayList<>();
-    static Map<String, Literal> litMap = new HashMap<>(); // literalValue -> Literal
+    static class LitTabEntry {
+        String literal;
+        int address;
 
-    static List<Integer> poolTable = new ArrayList<>(); // starting indices (1-based) of literal pools
+        LitTabEntry(String literal, int address) {
+            this.literal = literal;
+            this.address = address;
+        }
+    }
 
-    static List<String> intermediateLines = new ArrayList<>();
+    static class IntermediateCodeEntry {
+        int address;
+        String type;
+        String opcode;
+        String operand1;
+        String operand2;
 
-    public static void main(String[] args) throws Exception {
-        if (args.length == 0) {
-            System.out.println("Usage: java TwoPassAssembler sample.asm");
+        IntermediateCodeEntry(int address, String type, String opcode, String operand1, String operand2) {
+            this.address = address;
+            this.type = type;
+            this.opcode = opcode;
+            this.operand1 = operand1;
+            this.operand2 = operand2;
+        }
+    }
+
+    // Tables
+    static Map<String, OpTabEntry> optab = new HashMap<>();
+    static List<SymTabEntry> symtab = new ArrayList<>();
+    static List<LitTabEntry> littab = new ArrayList<>();
+    static List<Integer> pooltab = new ArrayList<>();
+    static Map<String, Integer> registers = new HashMap<>();
+    static Map<String, Integer> conditionCodes = new HashMap<>();
+
+    // Assembler state
+    static int locationCounter = 0;
+    static List<String> intermediateCode = new ArrayList<>();
+    static List<IntermediateCodeEntry> icTable = new ArrayList<>();
+    static List<String> machineCode = new ArrayList<>();
+
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            System.out.println("Usage: java TwoPassAssembler <input_file.asm>");
             System.exit(1);
         }
-        String asmFile = args[0];
-        initOpcodes();
 
-        // Pass I
-        passOne(asmFile);
+        String inputFile = args[0];
+        String baseName = inputFile.replaceAll("\\.asm$", "");
 
-        // Dump symbol/literal/pool/intermediate files
-        writeIntermediate();
-        writeSymbolTable();
-        writeLiterals();
-        writePools();
+        // Initialize tables
+        initializeTables();
 
-        // Pass II
-        passTwo();
-
-        System.out.println("Assembling completed. Output files:");
-        System.out.println(" - intermediate.txt");
-        System.out.println(" - symboltable.txt");
-        System.out.println(" - literals.txt");
-        System.out.println(" - pool.txt");
-        System.out.println(" - machinecode.txt");
-    }
-
-    static void initOpcodes() {
-        // Imperative statements (IS) - mapping to opcode numbers
-        isOpcode.put("STOP", 0);
-        isOpcode.put("ADD", 1);
-        isOpcode.put("SUB", 2);
-        isOpcode.put("MULT", 3);
-        isOpcode.put("MOVER", 4);
-        isOpcode.put("MOVEM", 5);
-        isOpcode.put("BC", 6);
-        isOpcode.put("COMP", 7);
-        isOpcode.put("DIV", 8);
-        isOpcode.put("READ", 9);
-        isOpcode.put("PRINT", 10);
-
-        // Assembler directives (AD)
-        adOpcode.put("START", 1);
-        adOpcode.put("END", 2);
-        adOpcode.put("ORIGIN", 3);
-        adOpcode.put("LTORG", 4);
-        adOpcode.put("EQU", 5);
-
-        // Declaratives (DL)
-        dlOpcode.put("DC", 1);
-        dlOpcode.put("DS", 2);
-
-        // Registers
-        regCode.put("AREG", 1);
-        regCode.put("BREG", 2);
-        regCode.put("CREG", 3);
-        regCode.put("DREG", 4);
-    }
-
-    static void passOne(String asmFile) throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get(asmFile));
-        int LC = 0;
-        boolean startSeen = false;
-
-        // literal pool for current segment: store literal strings (without '=')
-        List<String> currentPool = new ArrayList<>();
-
-        for (String rawLine : lines) {
-            String line = rawLine.trim();
-            if (line.isEmpty() || line.startsWith(";") || line.startsWith("#")) continue;
-
-            // remove comments inline (after ;)
-            int cidx = line.indexOf(';');
-            if (cidx != -1) line = line.substring(0, cidx).trim();
-            if (line.isEmpty()) continue;
-
-            // Tokenize: split by whitespace but keep commas separated
-            // We will identify label if first token looks like label
-            String[] tokens = line.split("\\s+");
-            int tokIdx = 0;
-
-            String label = null;
-            String op = null;
-            String operandPart = "";
-
-            // Identify label: if first token ends with ":" or if token is not an opcode/AD/DL and second token exists and is opcode
-            if (tokens.length > 1 && tokens[0].endsWith(":")) {
-                label = tokens[0].substring(0, tokens[0].length()-1);
-                tokIdx = 1;
-            } else if (tokens.length > 1 && !isOpcode.containsKey(tokens[0].toUpperCase())
-                       && !adOpcode.containsKey(tokens[0].toUpperCase())
-                       && !dlOpcode.containsKey(tokens[0].toUpperCase())) {
-                // treat as label (no colon) if second token is an opcode/directive
-                label = tokens[0];
-                tokIdx = 1;
-            }
-
-            if (tokIdx < tokens.length) {
-                op = tokens[tokIdx].toUpperCase();
-                tokIdx++;
-            } else continue;
-
-            // rest tokens are operands (could be separated by commas). Reconstruct operands
-            if (tokIdx < tokens.length) {
-                StringBuilder sb = new StringBuilder();
-                for (int i = tokIdx; i < tokens.length; i++) {
-                    if (i > tokIdx) sb.append(" ");
-                    sb.append(tokens[i]);
-                }
-                operandPart = sb.toString();
-            }
-
-            // If START directive
-            if (adOpcode.containsKey(op) && op.equals("START")) {
-                int startAddr = 0;
-                if (!operandPart.isEmpty()) {
-                    String v = operandPart.trim().split(",")[0];
-                    try { startAddr = Integer.parseInt(v); } catch (Exception e) { startAddr = 0; }
-                }
-                LC = startAddr;
-                startSeen = true;
-                intermediateLines.add(String.format("%d (AD,%02d) (C,%d)", LC, adOpcode.get(op), LC));
-                continue;
-            }
-
-            // If there's label, insert into symbol table with current LC
-            if (label != null) {
-                addOrUpdateSymbol(label, LC);
-            }
-
-            // AD handling except START above
-            if (adOpcode.containsKey(op)) {
-                if (op.equals("LTORG")) {
-                    // Assign addresses to literals in currentPool
-                    if (!currentPool.isEmpty()) {
-                        int poolStartIndex = litTable.size() + 1; // 1-based
-                        poolTable.add(poolStartIndex);
-                        for (String lit : currentPool) {
-                            Literal l = litMap.get(lit);
-                            if (l.address == -1) {
-                                l.address = LC;
-                                LC++;
-                                // already in litTable
-                            }
-                        }
-                        currentPool.clear();
-                    }
-                    intermediateLines.add(String.format("%d (AD,%02d)", LC, adOpcode.get(op)));
-                    continue;
-                } else if (op.equals("END")) {
-                    // assign any remaining literals
-                    if (!currentPool.isEmpty()) {
-                        int poolStartIndex = litTable.size() + 1;
-                        poolTable.add(poolStartIndex);
-                        for (String lit : currentPool) {
-                            Literal l = litMap.get(lit);
-                            if (l.address == -1) {
-                                l.address = LC;
-                                LC++;
-                            }
-                        }
-                        currentPool.clear();
-                    }
-                    intermediateLines.add(String.format("%d (AD,%02d)", LC, adOpcode.get(op)));
-                    break; // end of assembly
-                } else if (op.equals("ORIGIN")) {
-                    // ORIGIN <expr> (simple form: ORIGIN label or ORIGIN constant)
-                    String expr = operandPart.trim();
-                    int val = LC;
-                    try {
-                        val = Integer.parseInt(expr);
-                    } catch (Exception e) {
-                        Symbol s = symMap.get(expr);
-                        if (s != null && s.address != -1) val = s.address;
-                    }
-                    LC = val;
-                    intermediateLines.add(String.format("%d (AD,%02d) (C,%d)", LC, adOpcode.get(op), LC));
-                    continue;
-                } else if (op.equals("EQU")) {
-                    // label EQU expression -> set label's address
-                    String expr = operandPart.trim();
-                    int val = 0;
-                    try { val = Integer.parseInt(expr); } catch(Exception e) {
-                        Symbol s = symMap.get(expr);
-                        if (s != null) val = s.address;
-                    }
-                    if (label != null) {
-                        addOrUpdateSymbol(label, val);
-                    }
-                    intermediateLines.add(String.format("%d (AD,%02d) %s (C,%d)", LC, adOpcode.get(op), label==null?"":label, val));
-                    continue;
-                } else {
-                    // general AD
-                    intermediateLines.add(String.format("%d (AD,%02d)", LC, adOpcode.get(op)));
-                    continue;
-                }
-            }
-
-            // DL handling
-            if (dlOpcode.containsKey(op)) {
-                if (op.equals("DC")) {
-                    // DC <const>
-                    String valtok = operandPart.trim();
-                    int val = 0;
-                    try { val = Integer.parseInt(valtok); } catch(Exception e) {}
-                    intermediateLines.add(String.format("%d (DL,%02d) (C,%d)", LC, dlOpcode.get(op), val));
-                    LC += 1; // allocate one word containing value
-                    continue;
-                } else if (op.equals("DS")) {
-                    String valtok = operandPart.trim();
-                    int count = 0;
-                    try { count = Integer.parseInt(valtok); } catch(Exception e) {}
-                    intermediateLines.add(String.format("%d (DL,%02d) (C,%d)", LC, dlOpcode.get(op), count));
-                    LC += count;
-                    continue;
-                }
-            }
-
-            // Imperative statements (IS)
-            if (isOpcode.containsKey(op)) {
-                int opcodeNum = isOpcode.get(op);
-                // parse operands separated by commas
-                List<String> operands = new ArrayList<>();
-                if (!operandPart.isEmpty()) {
-                    String[] ops = operandPart.split(",");
-                    for (String o: ops) {
-                        operands.add(o.trim());
-                    }
-                }
-
-                // For operands produce tokens like (R,1) (S,idx) (L,idx) (C,val)
-                StringBuilder sb = new StringBuilder();
-                sb.append(String.format("%d (IS,%02d)", LC, opcodeNum));
-                for (String operand : operands) {
-                    if (regCode.containsKey(operand.toUpperCase())) {
-                        sb.append(" (R,").append(regCode.get(operand.toUpperCase())).append(")");
-                    } else if (operand.startsWith("=")) {
-                        // literal
-                        String litVal = operand.substring(1).trim(); // keep raw literal text such as 5 or '5'
-                        // unify: remove quotes if present
-                        if ((litVal.startsWith("'") && litVal.endsWith("'")) || (litVal.startsWith("\"") && litVal.endsWith("\""))) {
-                            litVal = litVal.substring(1, litVal.length()-1);
-                        }
-                        // add to literal table if not present
-                        if (!litMap.containsKey(litVal)) {
-                            Literal l = new Literal(litVal, litTable.size()+1);
-                            litTable.add(l);
-                            litMap.put(litVal, l);
-                        }
-                        Literal l = litMap.get(litVal);
-                        sb.append(" (L,").append(l.index).append(")");
-                        if (!currentPool.contains(litVal)) currentPool.add(litVal);
-                    } else {
-                        // symbol or constant numeric
-                        if (operand.matches("^-?\\d+$")) {
-                            sb.append(" (C,").append(operand).append(")");
-                        } else {
-                            // symbol: if not in table add with address -1
-                            if (!symMap.containsKey(operand)) {
-                                Symbol s = new Symbol(operand, symTable.size()+1);
-                                symTable.add(s);
-                                symMap.put(operand, s);
-                            }
-                            Symbol s = symMap.get(operand);
-                            sb.append(" (S,").append(s.index).append(")");
-                        }
-                    }
-                }
-
-                intermediateLines.add(sb.toString());
-                LC += 1;
-                continue;
-            }
-
-            // Unknown op — just write it as comment in intermediate
-            intermediateLines.add(String.format("%d (??) %s", LC, line));
-        }
-
-        // End of file: make sure any unassigned literals assigned if not done (just in case)
-        // (This should be handled at END or LTORG segments.)
-        // assign any remaining unassigned to next addresses (if any)
-        boolean anyUnassigned = false;
-        for (Literal l : litTable) {
-            if (l.address == -1) { anyUnassigned = true; break; }
-        }
-        if (anyUnassigned) {
-            int nextAddr = findNextLCFromIntermediate();
-            if (!poolTable.contains(litTable.size()==0?0:1)) {
-                // assume pool start at first unassigned lit index
-                poolTable.add( (litTable.size()>0) ? 1 : 0 );
-            }
-            for (Literal l : litTable) {
-                if (l.address == -1) {
-                    l.address = nextAddr++;
-                }
-            }
-        }
-    }
-
-    static void addOrUpdateSymbol(String name, int address) {
-        if (!symMap.containsKey(name)) {
-            Symbol s = new Symbol(name, symTable.size()+1);
-            s.address = address;
-            symTable.add(s);
-            symMap.put(name, s);
-        } else {
-            Symbol s = symMap.get(name);
-            s.address = address;
-        }
-    }
-
-    static int findNextLCFromIntermediate() {
-        // attempt to parse last LC from intermediateLines
-        if (intermediateLines.isEmpty()) return 0;
-        String last = intermediateLines.get(intermediateLines.size()-1);
         try {
-            String[] parts = last.trim().split("\\s+");
-            return Integer.parseInt(parts[0]) + 1;
-        } catch (Exception e) { return 0; }
+            System.out.println("Starting Pass-I of Two-Pass Assembler...");
+            // Pass I
+            passI(inputFile);
+
+            System.out.println("Starting Pass-II of Two-Pass Assembler...");
+            // Pass II
+            passII();
+
+            // Create output directory
+            File outputDir = new File(baseName);
+            if (!outputDir.exists()) {
+                outputDir.mkdirs();
+            }
+
+            // Generate output files
+            generateIntermediateFile(baseName);
+            generateSymbolFile(baseName);
+            generateLiteralFile(baseName);
+            generatePoolFile(baseName);
+            generateMachineCodeFile(baseName);
+
+            System.out.println("Two-pass assembler completed successfully!");
+            System.out.println("Output files generated in: " + baseName + "/");
+            System.out.println("Files created:");
+            System.out.println("- intermediate.txt");
+            System.out.println("- symbol.txt");
+            System.out.println("- literal.txt");
+            System.out.println("- pool.txt");
+            System.out.println("- machinecode.txt");
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    static void writeIntermediate() throws IOException {
-        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("intermediate.txt"))) {
-            for (String s : intermediateLines) bw.write(s + System.lineSeparator());
-        }
+    static void initializeTables() {
+        // Initialize Operation Table (OPTAB)
+        optab.put("STOP", new OpTabEntry("IS", "00"));
+        optab.put("ADD", new OpTabEntry("IS", "01"));
+        optab.put("SUB", new OpTabEntry("IS", "02"));
+        optab.put("MULT", new OpTabEntry("IS", "03"));
+        optab.put("MOVER", new OpTabEntry("IS", "04"));
+        optab.put("MOVEM", new OpTabEntry("IS", "05"));
+        optab.put("COMP", new OpTabEntry("IS", "06"));
+        optab.put("BC", new OpTabEntry("IS", "07"));
+        optab.put("DIV", new OpTabEntry("IS", "08"));
+        optab.put("READ", new OpTabEntry("IS", "09"));
+        optab.put("PRINT", new OpTabEntry("IS", "10"));
+
+        optab.put("START", new OpTabEntry("AD", "01"));
+        optab.put("END", new OpTabEntry("AD", "02"));
+        optab.put("ORIGIN", new OpTabEntry("AD", "03"));
+        optab.put("EQU", new OpTabEntry("AD", "04"));
+        optab.put("LTORG", new OpTabEntry("AD", "05"));
+
+        optab.put("DC", new OpTabEntry("DL", "01"));
+        optab.put("DS", new OpTabEntry("DL", "02"));
+
+        // Initialize Registers
+        registers.put("AREG", 1);
+        registers.put("BREG", 2);
+        registers.put("CREG", 3);
+        registers.put("DREG", 4);
+
+        // Initialize Condition Codes
+        conditionCodes.put("LT", 1);
+        conditionCodes.put("LE", 2);
+        conditionCodes.put("EQ", 3);
+        conditionCodes.put("GT", 4);
+        conditionCodes.put("GE", 5);
+        conditionCodes.put("ANY", 6);
+
+        // Initialize first pool
+        pooltab.add(1);
     }
-    static void writeSymbolTable() throws IOException {
-        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("symboltable.txt"))) {
-            bw.write("Index\tSymbol\tAddress\n");
-            for (Symbol s : symTable) {
-                bw.write(s.index + "\t" + s.name + "\t" + s.address + "\n");
+
+    static void passI(String filename) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            line = line.trim();
+            if (line.isEmpty() || line.startsWith(";")) {
+                continue;
             }
+
+            processLine(line);
         }
+
+        reader.close();
+        System.out.println("Pass-I completed successfully!");
     }
-    static void writeLiterals() throws IOException {
-        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("literals.txt"))) {
-            bw.write("Index\tLiteral\tAddress\n");
-            for (Literal l : litTable) {
-                bw.write(l.index + "\t" + l.literal + "\t" + l.address + "\n");
-            }
+
+    static void processLine(String line) {
+        // Parse the line - handle multiple spaces/tabs
+        String[] parts = line.split("\\s+");
+        String label = "";
+        String opcode = "";
+        String operand1 = "";
+        String operand2 = "";
+
+        int index = 0;
+
+        // Check if first token is a label (not an opcode)
+        if (parts.length > 0 && !optab.containsKey(parts[0])) {
+            label = parts[0];
+            index = 1;
         }
+
+        // Get opcode
+        if (index < parts.length) {
+            opcode = parts[index++];
+        }
+
+        // Get operands
+        if (index < parts.length) {
+            operand1 = parts[index++];
+        }
+        if (index < parts.length) {
+            operand2 = parts[index++];
+        }
+
+        // Process based on opcode
+        OpTabEntry opEntry = optab.get(opcode);
+        if (opEntry == null) {
+            System.err.println("Unknown opcode: " + opcode + " in line: " + line);
+            return;
+        }
+
+        processStatement(label, opcode, operand1, operand2, opEntry);
     }
-    static void writePools() throws IOException {
-        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("pool.txt"))) {
-            bw.write("PoolNo\tStartLiteralIndex\n");
-            for (int i = 0; i < poolTable.size(); i++) {
-                bw.write((i+1) + "\t" + poolTable.get(i) + "\n");
-            }
+
+    static void processStatement(String label, String opcode, String operand1, String operand2, OpTabEntry opEntry) {
+        switch (opEntry.type) {
+            case "IS":
+                processInstructionStatement(label, opcode, operand1, operand2, opEntry);
+                break;
+            case "AD":
+                processAssemblerDirective(label, opcode, operand1, operand2, opEntry);
+                break;
+            case "DL":
+                processDeclarativeStatement(label, opcode, operand1, operand2, opEntry);
+                break;
         }
     }
 
-    // Pass Two: read intermediate.txt, resolve addresses and create machinecode.txt
-    static void passTwo() throws Exception {
-        List<String> lines = Files.readAllLines(Paths.get("intermediate.txt"));
-        try (BufferedWriter bw = Files.newBufferedWriter(Paths.get("machinecode.txt"))) {
-            // machine code format: LC OPCODE R/M MEMADDR or for data words: LC -- -- value
-            for (String rawLine : lines) {
-                String line = rawLine.trim();
-                if (line.isEmpty()) continue;
-                // parse leading LC
-                Matcher m = Pattern.compile("^(\\d+)\\s+(.*)$").matcher(line);
-                if (!m.find()) continue;
-                int LC = Integer.parseInt(m.group(1));
-                String rest = m.group(2).trim();
+    static void processInstructionStatement(String label, String opcode, String operand1, String operand2,
+            OpTabEntry opEntry) {
+        // Add label to symbol table if present
+        if (!label.isEmpty()) {
+            addToSymbolTable(label, locationCounter);
+        }
 
-                // If AD or comment: skip unless it's END/START
-                if (rest.startsWith("(AD,")) {
-                    // optionally write nothing or special record
-                    // we'll skip writing code for AD
-                    continue;
-                }
-                if (rest.startsWith("(DL,")) {
-                    // For DC: format (DL,01) (C,val) -> generate a data word
-                    Matcher mm = Pattern.compile("\\(DL,(\\d{2})\\).*\\(C,(-?\\d+)\\)").matcher(rest);
-                    if (mm.find()) {
-                        int dl = Integer.parseInt(mm.group(1));
-                        int val = Integer.parseInt(mm.group(2));
-                        if (dl == dlOpcode.get("DC")) {
-                            bw.write(String.format("%d\t--\t--\t%d\n", LC, val));
-                        } else if (dl == dlOpcode.get("DS")) {
-                            // reserved; we may write zeros or just blank; we'll write reserved lines as zeros
-                            Matcher mm2 = Pattern.compile("\\(DL,\\d{2}\\)\\s*\\(C,(\\d+)\\)").matcher(rest);
-                            int cnt = mm2.find() ? Integer.parseInt(mm2.group(1)) : 0;
-                            for (int i = 0; i < cnt; i++) {
-                                bw.write(String.format("%d\t--\t--\t0\n", LC + i));
-                            }
-                        }
+        StringBuilder icLine = new StringBuilder();
+        icLine.append(locationCounter).append("\t(").append(opEntry.type).append(",").append(opEntry.opcode)
+                .append(")");
+
+        String op1 = "";
+        String op2 = "";
+
+        // Process operand1
+        if (!operand1.isEmpty()) {
+            if (registers.containsKey(operand1)) {
+                icLine.append("\t").append(registers.get(operand1));
+                op1 = String.valueOf(registers.get(operand1));
+            } else if (conditionCodes.containsKey(operand1)) {
+                icLine.append("\t").append(conditionCodes.get(operand1));
+                op1 = String.valueOf(conditionCodes.get(operand1));
+            } else {
+                int symIndex = getSymbolIndex(operand1);
+                icLine.append("\t(S,").append(String.format("%02d", symIndex)).append(")");
+                op1 = "(S," + String.format("%02d", symIndex) + ")";
+            }
+        }
+
+        // Process operand2
+        if (!operand2.isEmpty()) {
+            if (isNumeric(operand2)) {
+                // It's a literal
+                int litIndex = addLiteral(operand2);
+                icLine.append("\t(L,").append(String.format("%02d", litIndex)).append(")");
+                op2 = "(L," + String.format("%02d", litIndex) + ")";
+            } else if (registers.containsKey(operand2)) {
+                icLine.append("\t").append(registers.get(operand2));
+                op2 = String.valueOf(registers.get(operand2));
+            } else {
+                int symIndex = getSymbolIndex(operand2);
+                icLine.append("\t(S,").append(String.format("%02d", symIndex)).append(")");
+                op2 = "(S," + String.format("%02d", symIndex) + ")";
+            }
+        }
+
+        intermediateCode.add(icLine.toString());
+        icTable.add(new IntermediateCodeEntry(locationCounter, opEntry.type, opEntry.opcode, op1, op2));
+        locationCounter++;
+    }
+
+    static void processAssemblerDirective(String label, String opcode, String operand1, String operand2,
+            OpTabEntry opEntry) {
+        StringBuilder icLine = new StringBuilder();
+
+        switch (opcode) {
+            case "START":
+                locationCounter = Integer.parseInt(operand1);
+                icLine.append("\t(").append(opEntry.type).append(",").append(opEntry.opcode).append(")\t(C,")
+                        .append(operand1).append(")");
+                intermediateCode.add(icLine.toString());
+                icTable.add(new IntermediateCodeEntry(-1, opEntry.type, opEntry.opcode, "(C," + operand1 + ")", ""));
+                break;
+
+            case "END":
+                // Process any remaining literals
+                processRemainingLiterals();
+                icLine.append("\t(").append(opEntry.type).append(",").append(opEntry.opcode).append(")");
+                intermediateCode.add(icLine.toString());
+                icTable.add(new IntermediateCodeEntry(-1, opEntry.type, opEntry.opcode, "", ""));
+                break;
+
+            case "ORIGIN":
+                // Handle ORIGIN with expressions like LOOP+2
+                if (operand1.contains("+")) {
+                    String[] parts = operand1.split("\\+");
+                    String symbol = parts[0];
+                    int offset = Integer.parseInt(parts[1]);
+                    SymTabEntry entry = findSymbol(symbol);
+                    if (entry != null && entry.address != -1) {
+                        locationCounter = entry.address + offset;
                     }
-                    continue;
-                }
-                if (rest.startsWith("(IS,")) {
-                    // general: (IS,opcode) optionally (R,n) (S,idx) (L,idx) (C,val)
-                    Matcher ism = Pattern.compile("\\(IS,(\\d{2})\\)(.*)$").matcher(rest);
-                    if (ism.find()) {
-                        int opcodeNum = Integer.parseInt(ism.group(1));
-                        String operands = ism.group(2).trim();
-
-                        int r = 0;
-                        int mem = 0;
-                        boolean memSet = false;
-                        // find first (R,n)
-                        Matcher rm = Pattern.compile("\\(R,(\\d+)\\)").matcher(operands);
-                        if (rm.find()) {
-                            r = Integer.parseInt(rm.group(1));
-                        }
-                        // find S or L or C
-                        Matcher sm = Pattern.compile("\\(S,(\\d+)\\)").matcher(operands);
-                        if (sm.find()) {
-                            int sidx = Integer.parseInt(sm.group(1));
-                            Symbol s = symTable.get(sidx-1);
-                            mem = s.address;
-                            memSet = true;
-                        } else {
-                            Matcher lm = Pattern.compile("\\(L,(\\d+)\\)").matcher(operands);
-                            if (lm.find()) {
-                                int lidx = Integer.parseInt(lm.group(1));
-                                Literal l = litTable.get(lidx-1);
-                                mem = l.address;
-                                memSet = true;
-                            } else {
-                                Matcher cm = Pattern.compile("\\(C,(-?\\d+)\\)").matcher(operands);
-                                if (cm.find()) {
-                                    mem = Integer.parseInt(cm.group(1));
-                                    memSet = true;
-                                }
-                            }
-                        }
-                        if (!memSet) mem = 0;
-                        bw.write(String.format("%d\t%02d\t%02d\t%d\n", LC, opcodeNum, r, mem));
-                    }
+                    icLine.append("\t(").append(opEntry.type).append(",").append(opEntry.opcode).append(")\t(S,")
+                            .append(String.format("%02d", getSymbolIndex(symbol))).append(")");
+                } else if (isNumeric(operand1)) {
+                    locationCounter = Integer.parseInt(operand1);
+                    icLine.append("\t(").append(opEntry.type).append(",").append(opEntry.opcode).append(")\t(C,")
+                            .append(operand1).append(")");
                 } else {
-                    // unknown or comments - skip
+                    SymTabEntry entry = findSymbol(operand1);
+                    if (entry != null && entry.address != -1) {
+                        locationCounter = entry.address;
+                    }
+                    icLine.append("\t(").append(opEntry.type).append(",").append(opEntry.opcode).append(")\t(S,")
+                            .append(String.format("%02d", getSymbolIndex(operand1))).append(")");
                 }
+                intermediateCode.add(icLine.toString());
+                break;
+
+            case "EQU":
+                if (!label.isEmpty()) {
+                    SymTabEntry targetEntry = findSymbol(operand1);
+                    if (targetEntry != null) {
+                        addToSymbolTable(label, targetEntry.address);
+                    } else {
+                        // Forward reference - will be resolved later
+                        addToSymbolTable(label, -1);
+                    }
+                }
+                // EQU doesn't generate intermediate code line
+                break;
+
+            case "LTORG":
+                processLiterals();
+                break;
+        }
+    }
+
+    static void processDeclarativeStatement(String label, String opcode, String operand1, String operand2,
+            OpTabEntry opEntry) {
+        if (!label.isEmpty()) {
+            addToSymbolTable(label, locationCounter);
+        }
+
+        StringBuilder icLine = new StringBuilder();
+        icLine.append(locationCounter).append("\t(").append(opEntry.type).append(",").append(opEntry.opcode)
+                .append(")\t(C,").append(operand1).append(")");
+        intermediateCode.add(icLine.toString());
+        icTable.add(
+                new IntermediateCodeEntry(locationCounter, opEntry.type, opEntry.opcode, "(C," + operand1 + ")", ""));
+
+        if (opcode.equals("DS")) {
+            locationCounter += Integer.parseInt(operand1);
+        } else {
+            locationCounter++;
+        }
+    }
+
+    static void processLiterals() {
+        for (LitTabEntry entry : littab) {
+            if (entry.address == -1) {
+                entry.address = locationCounter;
+                String icLine = locationCounter + "\t(DL,01)\t(C," + entry.literal + ")";
+                intermediateCode.add(icLine);
+                icTable.add(new IntermediateCodeEntry(locationCounter, "DL", "01", "(C," + entry.literal + ")", ""));
+                locationCounter++;
             }
         }
+
+        // Add new pool entry
+        if (!littab.isEmpty()) {
+            pooltab.add(littab.size() + 1);
+        }
+    }
+
+    static void processRemainingLiterals() {
+        for (LitTabEntry entry : littab) {
+            if (entry.address == -1) {
+                entry.address = locationCounter;
+                String icLine = locationCounter + "\t(DL,01)\t(C," + entry.literal + ")";
+                intermediateCode.add(icLine);
+                icTable.add(new IntermediateCodeEntry(locationCounter, "DL", "01", "(C," + entry.literal + ")", ""));
+                locationCounter++;
+            }
+        }
+    }
+
+    // PASS II Implementation
+    static void passII() {
+        System.out.println("Processing intermediate code to generate machine code...");
+
+        for (IntermediateCodeEntry ic : icTable) {
+            if (ic.address == -1)
+                continue; // Skip AD directives
+
+            String mcLine = "";
+
+            if (ic.type.equals("IS")) {
+                // Generate machine code for instruction statements
+                mcLine = generateInstructionMachineCode(ic);
+            } else if (ic.type.equals("DL")) {
+                // Generate machine code for declarative statements
+                mcLine = generateDeclarativeMachineCode(ic);
+            }
+
+            if (!mcLine.isEmpty()) {
+                machineCode.add(String.format("%03d\t%s", ic.address, mcLine));
+            }
+        }
+
+        System.out.println("Pass-II completed successfully!");
+    }
+
+    static String generateInstructionMachineCode(IntermediateCodeEntry ic) {
+        StringBuilder mc = new StringBuilder();
+
+        // Add opcode
+        mc.append(ic.opcode);
+
+        // Process operand 1
+        String op1Address = resolveOperand(ic.operand1);
+        if (!op1Address.isEmpty()) {
+            mc.append(" ").append(String.format("%03d", Integer.parseInt(op1Address)));
+        } else {
+            mc.append(" 000");
+        }
+
+        // Process operand 2
+        String op2Address = resolveOperand(ic.operand2);
+        if (!op2Address.isEmpty()) {
+            mc.append(" ").append(String.format("%03d", Integer.parseInt(op2Address)));
+        } else {
+            mc.append(" 000");
+        }
+
+        return mc.toString();
+    }
+
+    static String generateDeclarativeMachineCode(IntermediateCodeEntry ic) {
+        if (ic.operand1.startsWith("(C,")) {
+            // Extract constant value
+            String constant = ic.operand1.substring(3, ic.operand1.length() - 1);
+            return "00 000 " + String.format("%03d", Integer.parseInt(constant));
+        }
+        return "";
+    }
+
+    static String resolveOperand(String operand) {
+        if (operand.isEmpty())
+            return "";
+
+        if (operand.matches("\\d+")) {
+            // Simple register number
+            return operand;
+        }
+
+        if (operand.startsWith("(S,")) {
+            // Symbol reference
+            int symIndex = Integer.parseInt(operand.substring(3, operand.length() - 1));
+            if (symIndex <= symtab.size()) {
+                SymTabEntry entry = symtab.get(symIndex - 1);
+                return String.valueOf(entry.address);
+            }
+        }
+
+        if (operand.startsWith("(L,")) {
+            // Literal reference
+            int litIndex = Integer.parseInt(operand.substring(3, operand.length() - 1));
+            if (litIndex <= littab.size()) {
+                LitTabEntry entry = littab.get(litIndex - 1);
+                return String.valueOf(entry.address);
+            }
+        }
+
+        if (operand.startsWith("(C,")) {
+            // Constant
+            return operand.substring(3, operand.length() - 1);
+        }
+
+        return "";
+    }
+
+    static int addLiteral(String literal) {
+        // Check if literal already exists
+        for (int i = 0; i < littab.size(); i++) {
+            if (littab.get(i).literal.equals(literal)) {
+                return i + 1;
+            }
+        }
+
+        // Add new literal
+        littab.add(new LitTabEntry(literal, -1));
+        return littab.size();
+    }
+
+    static void addToSymbolTable(String symbol, int address) {
+        // Check if symbol already exists
+        for (SymTabEntry entry : symtab) {
+            if (entry.symbol.equals(symbol)) {
+                if (address != -1) {
+                    entry.address = address;
+                }
+                return;
+            }
+        }
+
+        // Add new symbol
+        symtab.add(new SymTabEntry(symbol, address));
+    }
+
+    static SymTabEntry findSymbol(String symbol) {
+        for (SymTabEntry entry : symtab) {
+            if (entry.symbol.equals(symbol)) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    static int getSymbolIndex(String symbol) {
+        for (int i = 0; i < symtab.size(); i++) {
+            if (symtab.get(i).symbol.equals(symbol)) {
+                return i + 1;
+            }
+        }
+
+        // Symbol not found, add it with undefined address
+        symtab.add(new SymTabEntry(symbol, -1));
+        return symtab.size();
+    }
+
+    static boolean isNumeric(String str) {
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    static void generateIntermediateFile(String baseName) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(baseName + "/intermediate.txt"));
+        for (String line : intermediateCode) {
+            writer.println(line);
+        }
+        writer.close();
+    }
+
+    static void generateSymbolFile(String baseName) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(baseName + "/symbol.txt"));
+        writer.println("Symbol\tAddress");
+        for (SymTabEntry entry : symtab) {
+            if (entry.address != -1) {
+                writer.println(entry.symbol + "\t" + entry.address);
+            }
+        }
+        writer.close();
+    }
+
+    static void generateLiteralFile(String baseName) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(baseName + "/literal.txt"));
+        writer.println("Literal\tAddress");
+        for (LitTabEntry entry : littab) {
+            if (entry.address != -1) {
+                writer.println(entry.literal + "\t" + entry.address);
+            }
+        }
+        writer.close();
+    }
+
+    static void generatePoolFile(String baseName) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(baseName + "/pool.txt"));
+        writer.println("Pool\tLiteral No.");
+        for (int i = 0; i < pooltab.size(); i++) {
+            writer.println((i + 1) + "\t" + pooltab.get(i));
+        }
+        writer.close();
+    }
+
+    static void generateMachineCodeFile(String baseName) throws IOException {
+        PrintWriter writer = new PrintWriter(new FileWriter(baseName + "/machinecode.txt"));
+        writer.println("Address\tMachine Code");
+        for (String line : machineCode) {
+            writer.println(line);
+        }
+        writer.close();
     }
 }
