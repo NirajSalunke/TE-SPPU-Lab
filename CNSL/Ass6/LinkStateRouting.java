@@ -1,3 +1,4 @@
+
 import java.util.*;
 
 public class LinkStateRouting {
@@ -42,29 +43,28 @@ public class LinkStateRouting {
     }
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        try (Scanner sc = new Scanner(System.in)) {
+            System.out.print("Enter the number of routers: ");
+            int numRouters = sc.nextInt();
 
-        System.out.print("Enter the number of routers: ");
-        int numRouters = sc.nextInt();
+            int[][] graph = new int[numRouters][numRouters];
 
-        int[][] graph = new int[numRouters][numRouters];
-
-        System.out.println("Enter the distance matrix (enter -1 for no direct connection):");
-        for (int i = 0; i < numRouters; i++) {
-            for (int j = 0; j < numRouters; j++) {
-                int distance = sc.nextInt();
-                if (distance == -1) {
-                    graph[i][j] = Integer.MAX_VALUE;
-                } else {
-                    graph[i][j] = distance;
+            System.out.println("Enter the distance matrix (enter -1 for no direct connection):");
+            for (int i = 0; i < numRouters; i++) {
+                for (int j = 0; j < numRouters; j++) {
+                    int distance = sc.nextInt();
+                    if (distance == -1) {
+                        graph[i][j] = Integer.MAX_VALUE;
+                    } else {
+                        graph[i][j] = distance;
+                    }
                 }
+            }
+
+            for (int i = 0; i < numRouters; i++) {
+                dijkstra(graph, i, numRouters);
             }
         }
 
-        for (int i = 0; i < numRouters; i++) {
-            dijkstra(graph, i, numRouters);
-        }
-
-        sc.close();
     }
 }
