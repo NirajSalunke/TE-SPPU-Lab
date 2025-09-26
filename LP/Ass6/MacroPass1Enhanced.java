@@ -5,7 +5,8 @@ import java.util.regex.*;
 
 
 public class MacroPass1Enhanced {
-
+    // to use this code
+    // java MacroPass1Enchanced sample.asm 
     static class MNTEntry {
         String name;
         int mdtIndex;   // index into MDT where macro body starts (0-based)
