@@ -1,6 +1,6 @@
 // CRUD
 // insert one
-db.createCollections("Students");
+db.createCollection("Students");
 
 db.Students.insertOne({ name: "Niraj", age: 21, branch: "CSE", grade: "A" });
 
