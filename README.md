@@ -1,6 +1,6 @@
 # 📚 TE-SPPU-Lab
 
-This repository contains lab assignments for **Third Year – Semester 5** under **Savitribai Phule Pune University (SPPU)** for the following subjects:
+This repository contains lab assignments for **Third Year – Semester 5 and 6** under **Savitribai Phule Pune University (SPPU)** for the following subjects:
 
 * 🗄️ **Database Management Systems (DBMS) Lab**
 * 💻 **Lab Practices 1 (LP1) (elective Distributed Systems) Lab**
