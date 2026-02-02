@@ -5,6 +5,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TravelGo Tourism</title>
+    
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Internal -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        header h3 {
+            font-size: 1.3em;
+            font-weight: 300;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+        
+        header p {
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1em;
+        }
+        
+        nav {
+            background-color: #0d47a1;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+        nav a:hover {
+            background-color: #1976d2;
+        }
+        
+        section {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #1e88e5;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #1e88e5;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #1565c0;
+            font-size: 1.5em;
+            margin: 25px 0 15px;
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        ul li {
+            padding: 8px 0 8px 25px;
+            position: relative;
+        }
+        
+        ul li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #1e88e5;
+            font-weight: bold;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+        
+        th {
+            background-color: #1e88e5;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        img {
+            border-radius: 8px;
+            transition: opacity 0.3s ease;
+        }
+        
+        img:hover {
+            opacity: 0.9;
+        }
+        
+        form {
+            background-color: #f9f9f9;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #1e88e5;
+        }
+        
+        input[type="submit"] {
+            background-color: #1e88e5;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+        
+        input[type="submit"]:hover {
+            background-color: #1565c0;
+        }
+        
+        input[type="reset"] {
+            background-color: #757575;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        input[type="reset"]:hover {
+            background-color: #616161;
+        }
+        
+        footer {
+            background-color: #0d47a1;
+            color: white;
+            text-align: center;
+            padding: 25px 20px;
+            margin-top: 30px;
+        }
+        
+        footer a {
+            color: #64b5f6;
+            text-decoration: none;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        hr {
+            display: none;
+        }
+        
+        .gallery-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -18,200 +242,192 @@
         </p>
     </header>
 
-    <hr>
-
-    <div>
+    <!-- INLINE -->
+    <nav style="background-color: #0d47a1; padding: 15px;">
         <a href="#home">Home</a> |
         <a href="#packages">Packages</a> |
         <a href="#gallery">Gallery</a> |
         <a href="#contact">Contact</a>
-    </div>
+    </nav>
 
-    <hr />
+    <section id="home">
+        <h2>Welcome to TravelGo</h2>
 
-    <a name="home"></a>
-    <h2>Welcome to TravelGo</h2>
+        <p>
+            TravelGo Tourism is a professional travel and tourism agency offering affordable and customized travel packages
+            across the globe. Our mission is to provide exceptional travel experiences by combining comfort, safety,
+            convenience, and affordability.
+        </p>
 
-    <p>
-        TravelGo Tourism is a professional travel and tourism agency offering affordable and customized travel packages
-        across the globe. Our mission is to provide exceptional travel experiences by combining comfort, safety,
-        convenience, and affordability.
-    </p>
+        <p>
+            We organize domestic and international tours for families, students, corporate teams, honeymoon couples,
+            and solo travelers. Whether you want to explore mountains, relax on beaches, experience cultural heritage,
+            or enjoy modern city life, TravelGo has the perfect plan for you.
+        </p>
 
-    <p>
-        We organize domestic and international tours for families, students, corporate teams, honeymoon couples,
-        and solo travelers. Whether you want to explore mountains, relax on beaches, experience cultural heritage,
-        or enjoy modern city life, TravelGo has the perfect plan for you.
-    </p>
+        <p>
+            Over the years, we have successfully served thousands of happy customers who trust us for our transparent pricing,
+            professional service, and dedicated support. We believe that traveling is not a luxury, but an essential part of life.
+        </p>
 
-    <p>
-        Over the years, we have successfully served thousands of happy customers who trust us for our transparent
-        pricing,
-        professional service, and dedicated support. We believe that traveling is not a luxury, but an essential part of
-        life.
-    </p>
+        <h3>Why Choose Us?</h3>
+        <ul>
+            <li>Affordable travel plans for students, families, and professionals</li>
+            <li>Experienced and trained tour guides</li>
+            <li>Customized itineraries according to your preferences</li>
+            <li>24/7 customer support before, during, and after the trip</li>
+            <li>Easy booking process and secure payment options</li>
+            <li>High customer satisfaction and positive reviews</li>
+            <li>Transparent pricing with no hidden charges</li>
+        </ul>
 
-    <h3>Why Choose Us?</h3>
-    <ul>
-        <li>Affordable travel plans for students, families, and professionals</li>
-        <li>Experienced and trained tour guides</li>
-        <li>Customized itineraries according to your preferences</li>
-        <li>24/7 customer support before, during, and after the trip</li>
-        <li>Easy booking process and secure payment options</li>
-        <li>High customer satisfaction and positive reviews</li>
-        <li>Transparent pricing with no hidden charges</li>
-    </ul>
+        <p style="text-align: center; margin: 25px 0;">
+            Click on the image below to explore our popular tour packages.
+        </p>
 
-    <p>
-        Click on the image below to explore our popular tour packages.
-    </p>
+        <a href="#packages">
+            <center>
+                <img src="https://images.unsplash.com/photo-1707343848552-893e05dba6ac?q=80&w=1740&auto=format&fit=crop"
+                    alt="Travel Image" width="900" style="max-width: 100%; height: auto; border-radius: 10px;">
+            </center>
+        </a>
+    </section>
 
-    <a href="#packages">
-        <center>
-            <img src="https://images.unsplash.com/photo-1707343848552-893e05dba6ac?q=80&w=1740&auto=format&fit=crop"
-                alt="Travel Image" width="900">
-        </center>
-    </a>
+    <section id="packages">
+        <h2>Tour Packages</h2>
 
-    <hr />
+        <p>
+            Our tour packages are carefully designed by travel experts to ensure the best experience for our customers.
+            Each package includes accommodation, transportation, sightseeing, and guided tours.
+        </p>
 
-    <a name="packages"></a>
-    <h2>Tour Packages</h2>
+        <p>
+            Below are some of our most popular international destinations. Prices may vary depending on season and availability.
+        </p>
 
-    <p>
-        Our tour packages are carefully designed by travel experts to ensure the best experience for our customers.
-        Each package includes accommodation, transportation, sightseeing, and guided tours.
-    </p>
+        <table cellpadding="10" border="1">
+            <tr>
+                <th>Destination</th>
+                <th>Duration</th>
+                <th>Price</th>
+            </tr>
+            <tr>
+                <td>Paris, France</td>
+                <td>5 Days / 4 Nights</td>
+                <!-- INLINE CSS EXAMPLE -->
+                <td style="color: #1565c0; font-weight: bold;">&#8377; 120,000</td>
+            </tr>
+            <tr>
+                <td>Tokyo, Japan</td>
+                <td>7 Days / 6 Nights</td>
+                <td style="color: #1565c0; font-weight: bold;">&#8377; 200,000</td>
+            </tr>
+            <tr>
+                <td>Sydney, Australia</td>
+                <td>6 Days / 5 Nights</td>
+                <td style="color: #1565c0; font-weight: bold;">&#8377; 180,000</td>
+            </tr>
+            <tr>
+                <td>Dubai, UAE</td>
+                <td>4 Days / 3 Nights</td>
+                <td style="color: #1565c0; font-weight: bold;">&#8377; 95,000</td>
+            </tr>
+            <tr>
+                <td>Maldives</td>
+                <td>5 Days / 4 Nights</td>
+                <td style="color: #1565c0; font-weight: bold;">&#8377; 150,000</td>
+            </tr>
+        </table>
 
-    <p>
-        Below are some of our most popular international destinations. Prices may vary depending on season and
-        availability.
-    </p>
+        <p style="background-color: #e3f2fd; padding: 15px; border-left: 3px solid #1e88e5; border-radius: 4px;">
+            <strong>📍 Coming Soon:</strong> We are continuously expanding our destinations. Upcoming locations include Switzerland, Singapore, Thailand, Bali, New Zealand, South Korea, and Canada.
+        </p>
+    </section>
 
-    <table cellpadding="10" border="1">
-        <tr>
-            <th>Destination</th>
-            <th>Duration</th>
-            <th>Price</th>
-        </tr>
-        <tr>
-            <td>Paris, France</td>
-            <td>5 Days / 4 Nights</td>
-            <td>&#8377; 120000</td>
-        </tr>
-        <tr>
-            <td>Tokyo, Japan</td>
-            <td>7 Days / 6 Nights</td>
-            <td>&#8377; 200000</td>
-        </tr>
-        <tr>
-            <td>Sydney, Australia</td>
-            <td>6 Days / 5 Nights</td>
-            <td>&#8377; 180000</td>
-        </tr>
-        <tr>
-            <td>Dubai, UAE</td>
-            <td>4 Days / 3 Nights</td>
-            <td>&#8377; 95000</td>
-        </tr>
-        <tr>
-            <td>Maldives</td>
-            <td>5 Days / 4 Nights</td>
-            <td>&#8377; 150000</td>
-        </tr>
-    </table>
+    <section id="gallery">
+        <h2>Gallery</h2>
 
-    <p>
-        We are continuously expanding our destinations. Upcoming locations include Switzerland, Singapore, Thailand,
-        Bali, New Zealand, South Korea, and Canada.
-    </p>
+        <p>
+            Our gallery showcases some of the beautiful places visited by our travelers. These destinations offer stunning
+            landscapes, rich cultures, exciting adventures, and unforgettable memories.
+        </p>
 
-    <hr>
+        <p>
+            From snow-covered mountains and peaceful beaches to busy city streets and historic landmarks, our tours cover
+            a wide variety of experiences.
+        </p>
 
-    <a name="gallery"></a>
-    <h2>Gallery</h2>
+        <div class="gallery-container">
+            <!-- INLINE CSS EXAMPLES -->
+            <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1170&auto=format&fit=crop"
+                alt="Mountain Destination" width="300" style="object-fit: cover; height: 220px;">
 
-    <p>
-        Our gallery showcases some of the beautiful places visited by our travelers. These destinations offer stunning
-        landscapes, rich cultures, exciting adventures, and unforgettable memories.
-    </p>
+            <img src="https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?q=80&w=1170&auto=format&fit=crop"
+                alt="Beach Destination" width="300" style="object-fit: cover; height: 220px;">
 
-    <p>
-        From snow-covered mountains and peaceful beaches to busy city streets and historic landmarks, our tours cover
-        a wide variety of experiences.
-    </p>
+            <img src="https://images.unsplash.com/photo-1505832018823-50331d70d237?q=80&w=1208&auto=format&fit=crop"
+                alt="City Destination" width="300" style="object-fit: cover; height: 220px;">
+        </div>
+    </section>
 
-    <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1170&auto=format&fit=crop"
-        alt="Mountain Destination" width="300">
+    <section id="contact">
+        <h2>Contact Us</h2>
 
-    <img src="https://images.unsplash.com/photo-1517760444937-f6397edcbbcd?q=80&w=1170&auto=format&fit=crop"
-        alt="Beach Destination" width="300">
+        <p>
+            If you have any questions regarding our packages, pricing, or services, feel free to contact us.
+            Our team will be happy to assist you with planning your perfect trip.
+        </p>
 
-    <img src="https://images.unsplash.com/photo-1505832018823-50331d70d237?q=80&w=1208&auto=format&fit=crop"
-        alt="City Destination" width="300">
+        <p>
+            Please fill out the form below with accurate details so we can respond quickly.
+        </p>
 
-    <hr>
+        <form>
+            <label style="font-weight: 600; color: #333;">Name:</label><br />
+            <input type="text" name="name" placeholder="Enter your full name">
+            <br /><br />
 
-    <a name="contact"></a>
-    <h2>Contact Us</h2>
+            <label style="font-weight: 600; color: #333;">Email:</label><br />
+            <input type="email" name="email" placeholder="Enter your email address">
+            <br /><br />
 
-    <p>
-        If you have any questions regarding our packages, pricing, or services, feel free to contact us.
-        Our team will be happy to assist you with planning your perfect trip.
-    </p>
+        </section >
+            <label style="font-weight: 600; color: #333;">Destination Interested:</label><br />
+            <select  >
+                <option>Paris</option>
+                <option>Japan</option>
+                <option>Australia</option>
+                <option>Dubai</option>
+                <option>Maldives</option>
+                <option>Switzerland</option>
+            </select>
 
-    <p>
-        Please fill out the form below with accurate details so we can respond quickly.
-    </p>
+            <br /><br />
 
-    <form>
-        Name:<br />
-        <input type="text" name="name">
-        <br /><br />
+            <label style="font-weight: 600; color: #333;">Message:</label><br />
+            <textarea rows="4" cols="40" placeholder="Write your travel requirements here..."></textarea>
+            <br /><br />
 
-        Email:<br />
-        <input type="email" name="email">
-        <br /><br />
-
-        Destination Interested:<br />
-        <select>
-            <option>Paris</option>
-            <option>Japan</option>
-            <option>Australia</option>
-            <option>Dubai</option>
-            <option>Maldives</option>
-            <option>Switzerland</option>
-        </select>
-
-        <br /><br />
-
-        Message:<br />
-        <textarea rows="4" cols="40" placeholder="Write your travel requirements here..."></textarea>
-        <br /><br />
-
-        <input type="submit" value="Submit">
-        <input type="reset" value="Reset">
-    </form>
-
-    <br /><br />
-
-    <hr>
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset">
+        </form>
+    </section>
 
     <footer>
-        <p>
+        <p style="font-size: 1.1em; margin-bottom: 10px;">
             &copy; 2026 TravelGo Tourism | All Rights Reserved
         </p>
         <p>
             Official Website: <a href="/">www.travelgo.com</a>
         </p>
         <p>
-            Email: support@travelgo.com
+            Email: <a href="mailto:support@travelgo.com">support@travelgo.com</a>
         </p>
         <p>
             Phone: +91 98765 43210
         </p>
         <p>
-            Address: TravelGo Tourism, Main Street, Pune, Maharastra, 411027, India.
+            Address: TravelGo Tourism, Main Street, Pune, Maharashtra, 411027, India.
         </p>
     </footer>
 
