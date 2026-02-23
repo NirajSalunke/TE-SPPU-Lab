@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="employees.xsl"?>
+<!DOCTYPE employees [
+  <!ELEMENT employees (employee+)>
+  <!ELEMENT employee (name,department,salary,hire_date,email)>
+  <!ATTLIST employee empId ID #IMPLIED>
+  <!ELEMENT name (#PCDATA)>
+  <!ELEMENT department (#PCDATA)>
+  <!ELEMENT salary (#PCDATA)>
+  <!ELEMENT hire_date (#PCDATA)>
+  <!ELEMENT email (#PCDATA)>
+]>
+<employees>
+  <employee empId="emp1">
+    <name>Niraj Salunke</name>
+    <department>Software Development</department>
+    <salary>85000</salary>
+    <hire_date>2024-06-01</hire_date>
+    <email>niraj.salunke@company.com</email>
+  </employee>
+  <employee empId="emp2">
+    <name>John Doe</name>
+    <department>Engineering</department>
+    <salary>75000</salary>
+    <hire_date>2020-01-15</hire_date>
+    <email>john.doe@company.com</email>
+  </employee>
+  <employee empId="emp3">
+    <name>Jane Smith</name>
+    <department>Marketing</department>
+    <salary>68000</salary>
+    <hire_date>2023-09-10</hire_date>
+    <email>jane.smith@company.com</email>
+  </employee>
+</employees>
