@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Locked</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
+      background: #f5f5f5; 
+      font-family: Arial, sans-serif; 
+    }
+    .lock { 
+      background: white; 
+      padding: 40px; 
+      border-radius: 8px; 
+      border: 1px solid #ddd; 
+      text-align: center; 
+      width: 350px;
+    }
+    h1 { 
+      color: #dc3545; 
+      margin-bottom: 15px; 
+      font-size: 28px; 
+    }
+    p { 
+      color: #666; 
+      margin-bottom: 25px; 
+      font-size: 16px; 
+    }
+    button { 
+      padding: 12px 30px; 
+      background: #007bff; 
+      color: white; 
+      border: none; 
+      border-radius: 4px; 
+      font-size: 16px; 
+      cursor: pointer; 
+    }
+  </style>
+</head>
+<body>
+  <div class="lock">
+    <h1>🚫 ACCOUNT LOCKED</h1>
+    <p>Too many failed attempts.<br>Contact admin to unlock.</p>
+    <button onclick="window.location.href='index.html'">Try Again</button>
+  </div>
+</body>
+</html>
