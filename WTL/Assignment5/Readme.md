@@ -1,2 +1,3 @@
 Setup the server as per this
-<img src="./image.png"  />
+<img src="./images/image.jpg" width="50%" alt="Screenshot" />
+
