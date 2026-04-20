@@ -1,0 +1,304 @@
+<!-- NAVBAR -->
+<nav class="fixed top-0 w-full z-50 bg-white border-b border-gray-200">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 bg-black rounded-md flex items-center justify-center">
+        <span class="text-white font-bold text-xs">N</span>
+      </div>
+      <span class="text-lg font-bold text-black tracking-tight">NexaFlow</span>
+    </div>
+
+    <div class="hidden md:flex items-center gap-8">
+      <button (click)="scrollTo('features')" class="text-gray-500 hover:text-black text-sm transition-colors">Features</button>
+      <button (click)="scrollTo('how-it-works')" class="text-gray-500 hover:text-black text-sm transition-colors">How It Works</button>
+      <button (click)="scrollTo('pricing')" class="text-gray-500 hover:text-black text-sm transition-colors">Pricing</button>
+      <button (click)="scrollTo('contact')" class="text-gray-500 hover:text-black text-sm transition-colors">Contact</button>
+    </div>
+
+    <div class="hidden md:flex items-center gap-3">`
+      <button class="text-sm text-gray-500 hover:text-black px-4 py-2 transition-colors">Log in</button>
+      <button (click)="scrollTo('pricing')" class="text-sm font-medium text-white bg-black px-5 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+        Get Started
+      </button>
+    </div>
+
+    <button (click)="mobileMenuOpen = !mobileMenuOpen" class="md:hidden p-2">
+      <span class="text-xl">{{ mobileMenuOpen ? '✕' : '☰' }}</span>
+    </button>
+  </div>
+
+  @if (mobileMenuOpen) {
+    <div class="md:hidden px-6 pb-5 flex flex-col gap-4 border-t border-gray-100 pt-4 bg-white">
+      <button (click)="scrollTo('features')" class="text-left text-gray-700 text-sm py-1">Features</button>
+      <button (click)="scrollTo('how-it-works')" class="text-left text-gray-700 text-sm py-1">How It Works</button>
+      <button (click)="scrollTo('pricing')" class="text-left text-gray-700 text-sm py-1">Pricing</button>
+      <button (click)="scrollTo('contact')" class="text-left text-gray-700 text-sm py-1">Contact</button>
+      <button (click)="scrollTo('pricing')" class="text-sm font-medium text-white bg-black px-5 py-2.5 rounded-lg w-fit">Get Started</button>
+    </div>
+  }
+</nav>
+
+<!-- HERO -->
+<section class="pt-36 pb-28 bg-white">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <span class="inline-block border border-gray-200 text-gray-500 text-xs font-medium px-3 py-1.5 rounded-full mb-8 tracking-wide">
+      Now with AI-Powered Automation →
+    </span>
+    <h1 class="text-6xl md:text-8xl font-black text-black leading-[1.05] tracking-tighter mb-6">
+      Automate work.<br />Ship faster.
+    </h1>
+    <p class="text-lg text-gray-400 max-w-xl mx-auto mb-10 leading-relaxed">
+      NexaFlow connects your entire stack and automates the gaps between tools — so your team spends time building, not gluing.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <button (click)="scrollTo('pricing')" class="px-7 py-3.5 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors text-sm">
+        Start for free
+      </button>
+      <button (click)="scrollTo('how-it-works')" class="px-7 py-3.5 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors text-sm">
+        See how it works
+      </button>
+    </div>
+    <p class="mt-5 text-xs text-gray-400">No credit card required · 14-day free trial · Cancel anytime</p>
+
+    <!-- Dashboard Mockup -->
+    <div class="mt-20 max-w-3xl mx-auto rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+      <div class="bg-gray-50 border-b border-gray-200 px-4 py-3 flex items-center gap-2">
+        <div class="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
+        <span class="ml-3 text-xs text-gray-400 font-mono">nexaflow.io/dashboard</span>
+      </div>
+      <div class="p-6 grid grid-cols-3 gap-4 bg-white">
+        <div class="border border-gray-100 rounded-lg p-5">
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-2">Tasks Automated</p>
+          <p class="text-3xl font-black text-black">2.4M</p>
+          <p class="text-xs text-gray-400 mt-1">↑ 28% this month</p>
+        </div>
+        <div class="border border-gray-100 rounded-lg p-5 bg-black">
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-2">Time Saved</p>
+          <p class="text-3xl font-black text-white">840h</p>
+          <p class="text-xs text-gray-500 mt-1">↑ 15% this month</p>
+        </div>
+        <div class="border border-gray-100 rounded-lg p-5">
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wide mb-2">Active Flows</p>
+          <p class="text-3xl font-black text-black">1,284</p>
+          <p class="text-xs text-gray-400 mt-1">↑ 42% this month</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUSTED BY -->
+<section class="py-12 border-y border-gray-100 bg-white">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <p class="text-xs text-gray-400 uppercase tracking-widest mb-7">Trusted by world-class teams</p>
+    <div class="flex flex-wrap items-center justify-center gap-10 opacity-30">
+      <span class="text-xl font-black text-black">Stripe</span>
+      <span class="text-xl font-black text-black">Notion</span>
+      <span class="text-xl font-black text-black">Vercel</span>
+      <span class="text-xl font-black text-black">Linear</span>
+      <span class="text-xl font-black text-black">Figma</span>
+      <span class="text-xl font-black text-black">Supabase</span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="mb-14">
+      <p class="text-xs text-gray-400 uppercase tracking-widest mb-3">Features</p>
+      <h2 class="text-4xl md:text-5xl font-black text-black tracking-tight">Everything you need.</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-gray-100 border border-gray-100 rounded-xl overflow-hidden">
+      @for (f of features; track f.title) {
+        <div class="group p-8 bg-white hover:bg-gray-50 transition-colors">
+          <div class="text-2xl mb-5">{{ f.icon }}</div>
+          <h3 class="text-base font-bold text-black mb-2">{{ f.title }}</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">{{ f.desc }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="py-24 bg-gray-50 border-y border-gray-100">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="mb-14">
+      <p class="text-xs text-gray-400 uppercase tracking-widest mb-3">How It Works</p>
+      <h2 class="text-4xl md:text-5xl font-black text-black tracking-tight">Up in three steps.</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      @for (step of steps; track step.num) {
+        <div class="relative">
+          <div class="w-10 h-10 rounded-lg bg-black flex items-center justify-center mb-6">
+            <span class="text-white font-black text-sm">{{ step.num }}</span>
+          </div>
+          <h3 class="text-lg font-bold text-black mb-2">{{ step.title }}</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">{{ step.desc }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="mb-14">
+      <p class="text-xs text-gray-400 uppercase tracking-widest mb-3">Pricing</p>
+      <h2 class="text-4xl md:text-5xl font-black text-black tracking-tight">Simple pricing.</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+      @for (plan of plans; track plan.name) {
+        <div [class]="plan.popular
+          ? 'relative p-8 rounded-xl bg-black text-white'
+          : 'relative p-8 rounded-xl bg-white border border-gray-200 hover:border-gray-300 transition-colors'">
+
+          @if (plan.popular) {
+            <span class="absolute -top-3 left-6 bg-white text-black text-xs font-bold px-3 py-1 rounded-full border border-gray-200">
+              Most Popular
+            </span>
+          }
+
+          <h3 [class]="plan.popular ? 'text-lg font-bold text-white mb-1' : 'text-lg font-bold text-black mb-1'">{{ plan.name }}</h3>
+          <p [class]="plan.popular ? 'text-sm text-gray-400 mb-6' : 'text-sm text-gray-400 mb-6'">{{ plan.desc }}</p>
+
+          <div class="flex items-end gap-1 mb-8">
+            <span [class]="plan.popular ? 'text-4xl font-black text-white' : 'text-4xl font-black text-black'">{{ plan.price }}</span>
+            <span class="text-gray-400 mb-1 text-sm">{{ plan.period }}</span>
+          </div>
+
+          <ul class="space-y-2.5 mb-8">
+            @for (feat of plan.features; track feat) {
+              <li class="flex items-center gap-2.5 text-sm">
+                <span [class]="plan.popular ? 'text-white' : 'text-black'">✓</span>
+                <span [class]="plan.popular ? 'text-gray-300' : 'text-gray-600'">{{ feat }}</span>
+              </li>
+            }
+          </ul>
+
+          <button [class]="plan.popular
+            ? 'w-full py-2.5 bg-white text-black text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors'
+            : 'w-full py-2.5 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors'">
+            {{ plan.cta }}
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="py-24 bg-gray-50 border-y border-gray-100">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="mb-14">
+      <p class="text-xs text-gray-400 uppercase tracking-widest mb-3">Testimonials</p>
+      <h2 class="text-4xl md:text-5xl font-black text-black tracking-tight">Loved by teams.</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      @for (t of testimonials; track t.name) {
+        <div class="bg-white border border-gray-100 rounded-xl p-7">
+          <p class="text-sm text-gray-600 leading-relaxed mb-6">"{{ t.quote }}"</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-black flex items-center justify-center text-white text-xs font-bold">
+              {{ t.avatar }}
+            </div>
+            <div>
+              <p class="font-semibold text-black text-sm">{{ t.name }}</p>
+              <p class="text-gray-400 text-xs">{{ t.role }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT FORM -->
+<section id="contact" class="py-24 bg-white">
+  <div class="max-w-xl mx-auto px-6">
+    <div class="mb-12">
+      <p class="text-xs text-gray-400 uppercase tracking-widest mb-3">Contact</p>
+      <h2 class="text-4xl md:text-5xl font-black text-black tracking-tight mb-4">Get in touch.</h2>
+      <p class="text-gray-400 text-sm">Questions or want a custom demo? We reply within 24 hours.</p>
+    </div>
+
+    @if (formSubmitted) {
+      <div class="p-6 bg-gray-50 border border-gray-200 rounded-xl text-center">
+        <p class="text-2xl mb-2">✓</p>
+        <p class="font-bold text-black">Message sent!</p>
+        <p class="text-gray-400 text-sm mt-1">We'll get back to you within 24 hours.</p>
+      </div>
+    }
+
+    @if (!formSubmitted) {
+      <form (ngSubmit)="onSubmit()" #contactFormRef="ngForm" class="space-y-5">
+        <div>
+          <label class="block text-sm font-medium text-black mb-2">Full Name</label>
+          <input type="text" name="name" [(ngModel)]="contactForm.name" required
+            placeholder="Your name"
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-black text-black placeholder-gray-300 text-sm transition-colors bg-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-black mb-2">Email</label>
+          <input type="email" name="email" [(ngModel)]="contactForm.email" required
+            placeholder="you@company.com"
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-black text-black placeholder-gray-300 text-sm transition-colors bg-white" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-black mb-2">Message</label>
+          <textarea name="message" [(ngModel)]="contactForm.message" required rows="5"
+            placeholder="Tell us about your use case..."
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:border-black text-black placeholder-gray-300 text-sm transition-colors resize-none bg-white"></textarea>
+        </div>
+        <button type="submit"
+          [disabled]="formLoading || !contactFormRef.valid"
+          class="w-full py-3 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          {{ formLoading ? 'Sending...' : 'Send Message' }}
+        </button>
+      </form>
+    }
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-black text-gray-500 py-14">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+      <div class="col-span-1 md:col-span-2">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-6 h-6 bg-white rounded-md flex items-center justify-center">
+            <span class="text-black font-bold text-xs">N</span>
+          </div>
+          <span class="text-white font-bold text-base">NexaFlow</span>
+        </div>
+        <p class="text-sm leading-relaxed max-w-xs text-gray-500">The smartest way to automate workflows and ship 10x faster.</p>
+      </div>
+      <div>
+        <p class="text-white text-sm font-medium mb-4">Product</p>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white transition-colors">Features</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Pricing</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Changelog</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Roadmap</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="text-white text-sm font-medium mb-4">Company</p>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white transition-colors">About</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Careers</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between text-xs">
+      <p>© 2026 NexaFlow, Inc. All rights reserved.</p>
+      <p class="mt-2 md:mt-0">Built with Angular + TailwindCSS</p>
+    </div>
+  </div>
+</footer>
