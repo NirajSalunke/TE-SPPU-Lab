@@ -1,0 +1,46 @@
+name: Documentation
+description: Suggest updates, fixes, or additions to the documentation.
+title: "[DOCS]: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to update the Documentation!
+  - type: textarea
+    id: docs
+    attributes:
+      label: What are the changes you propose?
+      description: "A documentation upgrade!"
+      value: |
+        **Describe the change that is needed**
+        A clear and concise description of what needs to be updated, fixed, or added in the documentation.
+
+        **Select which event you're participating from**
+        - [] Social Winter of Code 2025 (SWOC 2025)
+        - [] Innogeeks Winter of Code 3.0 (IWOC 2025)
+
+        **Location of the documentation**
+        Provide links or specific sections/pages where the changes are required (e.g., README.md, docs/setup-guide.md).
+
+        **Reason for the change**
+        Explain why this change is necessary. For example:
+        - Is the documentation incorrect?
+        - Is there missing information?
+        - Is the existing documentation unclear or outdated?
+
+        **Suggested changes**
+        If possible, provide a clear outline or snippet of the suggested changes.
+
+        **Additional context**
+        Add any other context, screenshots, or examples to support the documentation change request.
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/OkenHaha/react-blog/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

@@ -1,0 +1,60 @@
+{
+  "name": "react-project",
+  "private": true,
+  "version": "0.0.0",
+  "proxy": "https://react-blog-onlk.onrender.com",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
+    "@reduxjs/toolkit": "^2.5.0",
+    "@uiw/react-md-editor": "^4.0.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "axios": "^1.7.7",
+    "chart.js": "^4.4.7",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
+    "framer-motion": "^11.18.1",
+    "gsap": "^3.12.7",
+    "html-to-image": "^1.11.11",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.475.0",
+    "react": "^18.2.0",
+    "react-animated-cursor": "^2.11.2",
+    "react-chartjs-2": "^5.3.0",
+    "react-confetti": "^6.2.2",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.4.0",
+    "react-markdown": "^9.0.3",
+    "react-modal": "^3.16.3",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^6.28.1",
+    "react-scripts": "^3.0.1",
+    "react-toastify": "^11.0.2",
+    "react-use": "^17.6.0",
+    "redux-persist": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "autoprefixer": "^10.4.9",
+    "postcss": "^8.4.16",
+    "tailwindcss": "^3.1.8",
+    "vite": "^6.0.11",
+    "vite-plugin-node-polyfills": "^0.23.0"
+  }
+}

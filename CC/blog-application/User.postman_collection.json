@@ -1,0 +1,292 @@
+{
+	"info": {
+		"_postman_id": "eb01010b-e87e-4c15-bd5b-644de7163653",
+		"name": "User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32933231",
+		"_collection_link": "https://react-blog-1258.postman.co/workspace/f1ea8f86-1ea6-4dac-a6e1-61c0e949bebb/collection/32933231-eb01010b-e87e-4c15-bd5b-644de7163653?action=share&source=collection_link&creator=32933231"
+	},
+	"item": [
+		{
+			"name": "LOGIN",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "credential",
+							"value": "nitin25",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Icanopen@25",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "REGISTER",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "nitin25",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "nitinkumar@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "icanOpen@25",
+							"type": "text"
+						},
+						{
+							"key": "name",
+							"value": "NItin",
+							"type": "text"
+						},
+						{
+							"key": "location",
+							"value": "Noida",
+							"type": "text"
+						},
+						{
+							"key": "picture",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "dob",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "otp",
+							"value": "252525",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET PROFILE",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhhNWRmMjQ2NGRjNDZlMGE0NmMzNGIiLCJpYXQiOjE3MzcxMzMzMjIsImV4cCI6MTczNzEzNjkyMn0.eK-uLF-erHhrDjoYzPhGwv-WcaRdJ-y1cACovm3GySQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/getProfile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"getProfile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EDIT PROFILE",
+			"request": {
+				"auth": {
+					"type": "bearer"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "name",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "location",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "dob",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "currentPassword",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "newPassword",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/editProfile",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"editProfile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzhhNWRmMjQ2NGRjNDZlMGE0NmMzNGIiLCJpYXQiOjE3MzcxMjE2NTcsImV4cCI6MTczNzEyNTI1N30.6awUR4MZzso8us6Y9MU-jWdTugxeDOKigWorjjxkuu0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "otp",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/deleteAccount",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"deleteAccount"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "RESET-PASSWORD",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "otp",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "newPassword",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "confirmPassword",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/reset-password",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"reset-password"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

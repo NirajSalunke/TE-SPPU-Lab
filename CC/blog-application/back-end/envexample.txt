@@ -1,0 +1,7 @@
+CONNECTION_URL="mongodb+srv://arkabasak62:1234@cluster0.i3bju.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+PORT = 8080
+JWT_SECRET = "Circle"
+SECRET_KEY="57d494cad2fd6e437f2b74e2292422b39355698090da1578a420960abc42e3e9ca487adaf47662af1c311cfacacf7951bf5f8a3458ff92728da78c4868011b6a7fa81ba91d1b804e44a98b034414710b772ef7a9729c03ea4663761688b25ebea28d350164966f313daaf13b37deb8e5a1dced02dc932d0460c5c56db59df5c8c28c4994ddb9b21e471e6431639fdc3a247e41a44428e488e0dcd347786e87ab"
+MAIL_HOST = smtp.gmail.com 
+MAIL_USER = replace with your email
+MAIL_PASS = replace with your email passkey

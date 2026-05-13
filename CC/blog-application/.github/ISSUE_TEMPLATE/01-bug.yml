@@ -1,0 +1,61 @@
+name: Bug Report
+description: File a bug report.
+title: "[BUG]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: |
+        # Description  
+        
+        # Steps to Reproduce  
+        -
+        -
+        
+        # Expected Behavior  
+        
+        # Actual Behavior  
+
+        **Select which event you're participating from**
+        - [] Social Winter of Code 2025 (SWOC 2025)
+        - [] Innogeeks Winter of Code 3.0 (IWOC 2025)
+        
+        # Screenshots
+
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browsers are you seeing the problem on?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+  - type: dropdown
+    id: screensizes
+    attributes:
+      label: What screen size are you seeing the problem on?
+      multiple: true
+      options:
+        - Desktop
+        - Tablet
+        - Mobile
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/OkenHaha/react-blog/blob/main/CODE_OF_CONDUCT.md). 
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

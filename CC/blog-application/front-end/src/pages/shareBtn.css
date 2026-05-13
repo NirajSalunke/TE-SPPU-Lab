@@ -1,0 +1,67 @@
+@keyframes ripple {
+    0% {
+        transform: scale(0.8);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.share-button-main::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.share-button-main:hover::after {
+    opacity: 0.1;
+}
+
+.share-button-main.sent::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #22c55e, #10b981);
+    animation: ripple 1s ease-out;
+}
+
+.share-option {
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+}
+
+.share-option:hover {
+    transform: scale(1.1);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.share-options-container {
+    display: flex;
+    gap: 0.75rem;
+    animation: slideIn 0.3s ease-out forwards;
+}
+
+.share-button-main.sent {
+    background-color: #22c55e;
+    color: white;
+    transition: all 0.3s ease;
+}
