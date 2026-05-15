@@ -1,133 +1,172 @@
-# Full-Stack MERN To-Do List Application
+# MERN Stack To-Do Application
 
-A modern, responsive To-Do List application built with MongoDB, Express, React, Node.js, and Tailwind CSS. It features a clean UI, task categorization, priority setting, due dates, and seamless API integration.
+A modern, full-stack Task Management application built using MongoDB, Express.js, React (Vite), and Node.js. 
 
 ## Features
+- **Frontend:** React, Vite, Tailwind CSS (shadcn-inspired UI), Zustand state management, and `lucide-react` icons.
+- **Backend:** Node.js, Express, MongoDB with Mongoose.
+- **Core Functionality:** Create, Read, Update, Delete tasks with completion statuses.
+- **Dynamic Images:** Uses `picsum.photos` for placeholder task images without needing external blob storage like Cloudinary.
+- **Deployment Ready:** Configured via environment variables to run easily on AWS EC2 or local environments.
 
-- **CRUD Operations**: Create, Read, Update, and Delete tasks.
-- **Task Status & Filters**: Mark tasks as completed and easily filter by All, Active, and Completed.
-- **Task Details**: Support for descriptions, priorities (Low, Medium, High), and due dates.
-- **Modern UI**: Polished, responsive design utilizing Tailwind CSS and Lucide Icons.
-- **Environment Driven**: Backend and Frontend URLs are configured via `.env` variables for easy deployment.
+---
 
-## Project Structure
+## Folder Structure
 
-```
+```text
 To-do-application/
-│
-├── client/          # React + Vite frontend
+├── client/          # Vite React application
 │   ├── .env.template
-│   ├── src/         # React components, styles, and utils
-│   └── package.json
-│
+│   └── src/
 ├── server/          # Node.js + Express backend
 │   ├── .env.template
-│   ├── models/      # Mongoose models
-│   ├── routes/      # API endpoints
-│   ├── server.js    # Entry point
-│   └── package.json
-│
-└── README.md        # This documentation
+│   └── src/
+└── README.md        # This file
 ```
 
 ---
 
-## Local Development Setup
+## Local Development
 
-### 1. Backend Setup (`/server`)
+### 1. Database Setup
+You will need a MongoDB instance running locally or a MongoDB Atlas cluster.
+If using Atlas, get your connection string (e.g., `mongodb+srv://...`).
 
-1. Navigate to the server directory:
-   ```bash
-   cd server
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Copy the environment template:
-   ```bash
-   cp .env.template .env
-   ```
-4. **Configure `.env`**: Open `.env` and set your MongoDB Atlas connection string (`MONGO_URI`). You can obtain one by creating a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-5. Start the backend development server:
-   ```bash
-   node server.js
-   ```
-   *The server will run on `http://localhost:5000`.*
+### 2. Backend Setup
+```bash
+cd server
+npm install
+cp .env.template .env
+```
+Edit `server/.env` and insert your MongoDB connection string into `MONGODB_URI`.
+```bash
+# Seed the database with sample data
+npm run seed
 
-### 2. Frontend Setup (`/client`)
+# Start the server in development mode
+npm run dev
+```
+The server will run on `http://localhost:5000`.
 
-1. Navigate to the client directory (open a new terminal tab):
-   ```bash
-   cd client
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Copy the environment template:
-   ```bash
-   cp .env.template .env
-   ```
-4. **Configure `.env`**: Open `.env` and ensure `VITE_API_URL` points to your backend URL (default is `http://localhost:5000/api/todos`).
-5. Start the frontend development server:
-   ```bash
-   npm run dev
-   ```
-   *The app will be available at `http://localhost:5173`.*
+### 3. Frontend Setup
+```bash
+cd client
+npm install
+cp .env.template .env
+```
+Ensure `VITE_API_BASE_URL=http://localhost:5000/api` in `client/.env`.
+```bash
+# Start the Vite development server
+npm run dev
+```
+The client will run on `http://localhost:5173`.
 
 ---
 
-## AWS Deployment Guide
+## AWS EC2 Deployment Guide
 
-Deploying this MERN stack to AWS involves hosting the frontend on a static hosting service and the backend on a compute service. 
+This guide assumes you are deploying to a fresh Ubuntu server on AWS EC2.
 
-### Prerequisites
-- An AWS Account.
-- MongoDB Atlas cluster set up and IP access configured (allow `0.0.0.0/0` or the specific IP of your AWS server).
+### Step 1: Install Dependencies on EC2
+SSH into your EC2 instance and install Node.js and Nginx:
+```bash
+sudo apt update
+sudo apt install -y curl
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs nginx git
+```
 
-### Deploying the Backend (EC2)
+### Step 2: Clone the Repository
+```bash
+git clone <your-repository-url>
+cd To-do-application
+```
 
-1. Launch an EC2 instance (Ubuntu Server 24.04 LTS is recommended).
-2. Connect to the instance via SSH.
-3. Install Node.js and NPM:
+### Step 3: Configure and Start the Backend
+1. Navigate to the server folder:
    ```bash
-   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-   sudo apt-get install -y nodejs
+   cd server
+   npm install
+   cp .env.template .env
    ```
-4. Clone your repository or upload the `server` folder.
-5. Navigate to the `server` directory and run `npm install`.
-6. Create a `.env` file with your production `MONGO_URI` and `PORT` (e.g., `80`).
-7. Use **PM2** to run the app in the background:
+2. Edit the `.env` file to include your **MongoDB Atlas** URI:
+   ```bash
+   nano .env
+   ```
+   Set `MONGODB_URI=mongodb+srv://<username>:<password>@cluster0...`
+   Set `NODE_ENV=production`
+   Set `CORS_ORIGIN=http://<your-ec2-public-ip>`
+3. Install PM2 to keep the app running in the background:
    ```bash
    sudo npm install -g pm2
-   sudo pm2 start server.js --name "todo-backend"
+   pm2 start src/server.js --name "todo-backend"
+   pm2 save
+   pm2 startup
    ```
-8. Ensure the EC2 Security Group allows inbound traffic on the port you specified (e.g., HTTP port 80).
-9. Note the **Public IPv4 address or DNS** of your EC2 instance. This is your API URL.
 
-### Deploying the Frontend (AWS Amplify or S3/CloudFront)
-
-**Option A: AWS Amplify (Easiest)**
-1. Go to the AWS Amplify Console.
-2. Connect your GitHub repository containing the project.
-3. Select the `client` directory as your application root.
-4. Amplify will automatically detect the Vite build settings. 
-5. Under Advanced Settings, add an Environment Variable:
-   - Key: `VITE_API_URL`
-   - Value: `http://<YOUR_EC2_PUBLIC_IP>/api/todos`
-6. Click Save and Deploy. Amplify will build and host your frontend globally.
-
-**Option B: S3 + CloudFront**
-1. In your local `client` folder, update the `.env` file with your EC2 API URL.
-2. Build the production application:
+### Step 4: Build the Frontend
+1. Navigate to the client folder:
+   ```bash
+   cd ../client
+   npm install
+   cp .env.template .env
+   ```
+2. Edit the client `.env` to point to the backend API:
+   ```bash
+   nano .env
+   ```
+   Set `VITE_API_BASE_URL=http://<your-ec2-public-ip>/api`
+3. Build the static files:
    ```bash
    npm run build
    ```
-3. Create an S3 Bucket in AWS (e.g., `my-todo-app`). Disable "Block all public access".
-4. Enable Static Website Hosting in the bucket properties.
-5. Upload the contents of the `client/dist` folder to your S3 bucket.
-6. Create an AWS CloudFront distribution pointing to your S3 bucket to provide HTTPS and global caching.
 
----
-*Built as a functional and modern application assignment.*
+### Step 5: Configure Nginx
+Nginx will serve the built React files and reverse-proxy `/api` to the Node.js backend.
+
+1. Open the default Nginx configuration:
+   ```bash
+   sudo nano /etc/nginx/sites-available/default
+   ```
+2. Replace the contents with the following:
+   ```nginx
+   server {
+       listen 80 default_server;
+       listen [::]:80 default_server;
+       
+       # Serve the React frontend
+       root /home/ubuntu/To-do-application/client/dist;
+       index index.html index.htm index.nginx-debian.html;
+
+       server_name _;
+
+       location / {
+           try_files $uri $uri/ /index.html;
+       }
+
+       # Reverse proxy API requests to Node.js backend
+       location /api {
+           proxy_pass http://localhost:5000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_cache_bypass $http_upgrade;
+       }
+   }
+   ```
+   *(Note: Adjust the `root` path if your username isn't `ubuntu` or the folder is located elsewhere).*
+
+3. Test and restart Nginx:
+   ```bash
+   sudo nginx -t
+   sudo systemctl restart nginx
+   ```
+
+### Step 6: Set Directory Permissions
+Ensure Nginx has permission to read the built `dist` folder:
+```bash
+sudo chmod -R 755 /home/ubuntu
+```
+
+You can now access your application using your EC2 instance's Public IP address in your browser!
