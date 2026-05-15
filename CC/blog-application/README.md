@@ -1,157 +1,354 @@
-![swoc2024 Banner](./swoc.jpg)
-![iwoc2025 Banner](./iwoc.png)
+# Inkwell — MERN Blog Application
 
-# React Blog - Social Winter of Code 2025 & Innogeeks WInter of Code 3.0 2025🌟
-
-Welcome to **React Blog**, an exciting application selected for **Social Winter of Code 2025** (SWOC-2025) alongside with **Innogeeks Winter of Code 3.0 2025**!
-
-This project is an open-source initiative aimed at building a robust and feature-rich blogging platform. We welcome contributors from all backgrounds to collaborate and make this project a success. If you like what you see, please consider giving this repository a **star**! 💥
+A modern, full-stack blog platform built with the MERN stack (MongoDB, Express, React, Node.js).
 
 ---
 
-## Features 🔄
-- User authentication and authorization
-- Create, edit, and delete blog posts
-- Search and filter blogs
-- Real-time updates with modern React and MongoDB integration
+## Project Structure
+
+```
+blog-application/
+├── client/          ← Vite + React frontend
+├── server/          ← Node.js + Express backend
+└── README.md
+```
 
 ---
 
-## Tools Used 🛠️
-| Tool           | 
-|----------------|
-| TailwindCSS    | 
-| ExpressJS      | 
-| ReactJS        | 
-| MongoDB        | 
-| NodeJS         | 
-| Vite           | 
+## Tech Stack
+
+| Layer      | Technology                              |
+|------------|-----------------------------------------|
+| Frontend   | React 18, Vite, Tailwind CSS, Zustand   |
+| Backend    | Node.js, Express.js                     |
+| Database   | MongoDB + Mongoose                      |
+| Auth       | JWT (admin login)                       |
+| Icons      | Lucide React                            |
 
 ---
 
-## Getting Started ⚡
-Follow these steps to set up the project locally:
+## Local Development Setup
 
-### Prerequisites ⚙
-Ensure you have the following installed:
-- **Node.js** (version 14.0 or higher recommended)
-- **MongoDB** (for the database)
+### Prerequisites
+- Node.js 18+
+- MongoDB running locally or MongoDB Atlas URI
 
-### Installation Steps 🔍
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/OkenHaha/react-blog.git
-   ```
+### 1. Clone / navigate to the project
+```bash
+cd blog-application
+```
 
-2. Navigate into the project directory:
-   ```bash
-   cd react-blog
-   ```
+### 2. Set up the backend
+```bash
+cd server
+cp .env.template .env
+# Edit .env — set your MONGO_URI and change JWT_SECRET
+npm install
+```
 
-3. Install dependencies for both frontend and backend:
-   ```bash
-   cd front-end
-   npm install
-   
-   cd ../back-end
-   npm install
-   ```
+### 3. Set up the frontend
+```bash
+cd ../client
+cp .env.template .env
+# VITE_API_BASE_URL=http://localhost:5000/api  (already set for local dev)
+npm install
+```
 
-4. Set up the `.env` file:
-   - Navigate to the `back-end` directory.
-   - Create a `.env` file.
-   - Add the following environment variables to the `.env` file:
-     ```env
-     CONNECTION_URL="your-mongodb-connection-url"
-     PORT=8080
-     JWT_SECRET="your-jwt-secret"
-     SECRET_KEY="your-secret-key"
-     MAIL_HOST="smtp.gmail.com"
-     MAIL_USER="your-email@example.com"
-     MAIL_PASS="your-email-passkey"
-     ```
+### 4. Seed the database (optional — for demo data)
+```bash
+cd server
+npm run seed
+# To reset and re-seed:
+npm run seed:reset
+```
 
-   - Example for local testing:
-     ```env
-     CONNECTION_URL="mongodb://localhost:27017"
-     PORT=8080
-     JWT_SECRET="test-secret"
-     SECRET_KEY="test-secret-key"
-     MAIL_HOST="smtp.gmail.com"
-     MAIL_USER="test@example.com"
-     MAIL_PASS="test-passkey"
-     ```
+### 5. Run in development
 
-5. Change the baselink for the server
-   - Navigate to the **components** directory inside **src** under the front-end folder
-   - edit the `baselink.js` file
-   - change the backend link to `http://localhost:8080`
+**Terminal 1 — Backend:**
+```bash
+cd server
+npm run dev
+```
 
-6. Start the development server and also for the frontend:
-   ```bash
-   cd back-end
-   npm run dev
-   ```
+**Terminal 2 — Frontend:**
+```bash
+cd client
+npm run dev
+```
 
-   ```bash
-   cd front-end
-   npm run dev
-   ```
-
-7. Open the application in your browser:
-   - Frontend: `http://127.0.0.1:5173/`
-   - Backend: `http://localhost:8080`
+Open: http://localhost:5173
 
 ---
 
-## Contribution Guidelines 🔧
-We’re thrilled to have you contribute to this project! Please follow these steps to get started:
+## Admin Access
 
-1. Star the repo
-2. Fork the repository and clone it locally.
-3. Create a new branch for your feature or bugfix:
-   ```bash
-   git checkout -b your-branch-name
-   ```
-4. Make your changes and commit them with clear and concise commit messages.
-5. Push your changes to your forked repository:
-   ```bash
-   git push origin your-branch-name
-   ```
-6. Make sure the Fork isn't behind any latest commit. (This is to make sure it doesn't have merge conflict and remove new commits being made)
-7. Create a pull request (PR) from your branch to the `main` branch of this repository.
-8. Wait for review and feedback.
+| Field    | Value             |
+|----------|-------------------|
+| Email    | admin@blog.com    |
+| Password | Admin@123         |
+| URL      | /login            |
 
-### Pro Tips 💡
-- Follow the code style and standards outlined in the repository.
-- Check the `CONTRIBUTING.md` file for detailed contribution rules.
-- Join discussions on issues and share your ideas!
+Change these in `server/.env` before deploying.
 
-### Labels
-Currently there are few labels being used for SWOC2025 and new commers to this repo needs help in explaining the labels and how they are assigned:-
-- `level 1` This label is assigned for issues that mostly handle with frontend and API calls
-- `level 2` This label is assigned for issues that requires CRUD operations to be made (e.g. adding new database schema, adding GET, POST, DELETE, etc. request to the database)
-- `level 3` This label is assigned for issues that requires system design, understanding the code architecture, etc. This is for high level issue that understands the whole code structure of the project.
-- `SWOC` This label is used to track for SWOC2025 contributions being made
-- `IWOC2025`This label is used to track for IWOC contributiosn being made
-- `Easy` This label is used for easy issues and PR for IWOC2025
-- `Medium` This label is used for intermediate issues and PR for IWOC2025
-- `Hard` This label is used for advance issues and PR for IWOC2025
-- `bug` `enhancement` `documentation` `good first issue` `duplicate` `help wanted` `wontfix` `invalid` are common labels issued by GitHub which will be used according to their label names
+---
 
-My label system might look hard but this is to make sure that my contributors to this project learn and get skilled enough that they will get a well paid job for their careers. I hope this encourages you to learn more, contribute meaningful contribution for yourself and not feel discouraged by others. I'm looking forward to what amazing and exiciting contribution you can make. Cheers!
+## Deploying to AWS EC2 (Simple — no Nginx, no PM2)
 
-<h3>Project Contributers❤️: <h3>
-<a href="https://github.com/OkenHaha/react-blog/graphs/contributors">
-<img src="https://contributors-img.web.app/image?repo=OkenHaha/react-blog"/>
+### Overview
+The Express server serves both the **API** and the **built React frontend**.  
+You only need ONE process running: `node server.js`  
+Access is via `http://<EC2-IP>:5000`
 
-## Repo Stared By:
+---
 
+### Step 1 — Launch EC2 Instance
+1. Go to AWS Console → EC2 → Launch Instance
+2. Choose **Ubuntu 22.04 LTS** (free tier eligible)
+3. Instance type: **t2.micro** (free tier)
+4. Key pair: Create or use existing `.pem` key
+5. **Security Group** — Add these inbound rules:
 
-[![Stargazers repo roster for @OkenHaha/react-blog](https://reporoster.com/stars/dark/OkenHaha/react-blog)](https://github.com/OkenHaha/react-blog/stargazers)
+| Type  | Protocol | Port | Source    |
+|-------|----------|------|-----------|
+| SSH   | TCP      | 22   | Your IP   |
+| Custom TCP | TCP | 5000 | 0.0.0.0/0 |
 
+6. Launch the instance
 
-## Repo Forked By:
+---
 
+### Step 2 — SSH into EC2
+```bash
+chmod 400 your-key.pem
+ssh -i your-key.pem ubuntu@<EC2-PUBLIC-IP>
+```
 
-[![Forkers repo roster for @OkenHaha/react-blog](https://reporoster.com/forks/dark/OkenHaha/react-blog)](https://github.com/OkenHaha/react-blog/network/members)
+---
+
+### Step 3 — Install Node.js & Git
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs git
+node -v   # should show v20.x
+```
+
+---
+
+### Step 4 — Upload your project
+
+**Option A — Git (recommended)**
+```bash
+git clone https://github.com/YOUR_USERNAME/blog-application.git
+cd blog-application
+```
+
+**Option B — SCP from your machine**
+```bash
+# Run this from your local machine:
+scp -i your-key.pem -r blog-application ubuntu@<EC2-IP>:~/
+```
+
+---
+
+### Step 5 — Install dependencies
+```bash
+cd ~/blog-application/server
+npm install
+
+cd ~/blog-application/client
+npm install
+```
+
+---
+
+### Step 6 — Create environment files
+
+**Server .env:**
+```bash
+cd ~/blog-application/server
+cp .env.template .env
+nano .env
+```
+Set these values:
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://user:password@cluster.mongodb.net/mern_blog
+JWT_SECRET=change_this_to_a_long_random_string_in_production
+CLIENT_URL=http://<EC2-PUBLIC-IP>:5000
+NODE_ENV=production
+ADMIN_EMAIL=admin@blog.com
+ADMIN_PASSWORD=YourSecurePassword
+ADMIN_NAME=Admin
+```
+
+**Client .env:**
+```bash
+cd ~/blog-application/client
+cp .env.template .env
+nano .env
+```
+Set:
+```env
+VITE_API_BASE_URL=http://<EC2-PUBLIC-IP>:5000/api
+```
+
+---
+
+### Step 7 — Build the React frontend
+```bash
+cd ~/blog-application/client
+npm run build
+```
+This creates `client/dist/` which Express will serve in production.
+
+---
+
+### Step 8 — Seed the database (optional)
+```bash
+cd ~/blog-application/server
+npm run seed
+```
+
+---
+
+### Step 9 — Start the server with Screen
+
+```bash
+# Install screen if not present
+sudo apt install -y screen
+
+# Start a named screen session
+screen -S blog
+
+# Inside the screen session:
+cd ~/blog-application/server
+NODE_ENV=production node server.js
+
+# Detach from screen (keeps server running):
+# Press Ctrl + A, then D
+```
+
+Your blog is now live at: **http://\<EC2-PUBLIC-IP\>:5000**
+
+---
+
+### Managing the Server
+
+```bash
+# List running screen sessions
+screen -ls
+
+# Re-attach to the blog session
+screen -r blog
+
+# Stop the server (from inside screen)
+Ctrl + C
+
+# Restart the server
+NODE_ENV=production node server.js
+```
+
+---
+
+### MongoDB Options
+
+**Option A — MongoDB Atlas (recommended for EC2)**
+1. Create free cluster at https://cloud.mongodb.com
+2. Create a database user
+3. Add EC2's public IP to the IP whitelist (or allow 0.0.0.0/0 for testing)
+4. Copy the connection string to `MONGO_URI` in server `.env`
+
+**Option B — Local MongoDB on EC2**
+```bash
+sudo apt install -y mongodb
+sudo systemctl start mongodb
+sudo systemctl enable mongodb
+# Use: MONGO_URI=mongodb://127.0.0.1:27017/mern_blog
+```
+
+---
+
+### Updating the App
+
+```bash
+# Pull latest changes (if using Git)
+cd ~/blog-application
+git pull
+
+# Rebuild frontend
+cd client && npm run build
+
+# Restart server
+screen -r blog
+# Ctrl+C to stop, then:
+NODE_ENV=production node server.js
+# Ctrl+A, D to detach
+```
+
+---
+
+## API Reference
+
+### Public
+| Method | Endpoint                     | Description          |
+|--------|------------------------------|----------------------|
+| GET    | /api/posts                   | List posts           |
+| GET    | /api/posts/featured          | Featured posts       |
+| GET    | /api/posts/search?q=         | Search posts         |
+| GET    | /api/posts/:slug             | Get post by slug     |
+| GET    | /api/posts/related/:slug     | Related posts        |
+| GET    | /api/categories              | List categories      |
+| GET    | /api/comments/post/:id       | Get post comments    |
+| POST   | /api/comments/post/:id       | Add comment          |
+| PATCH  | /api/posts/:id/like          | Like a post          |
+
+### Admin (JWT required)
+| Method | Endpoint                | Description          |
+|--------|-------------------------|----------------------|
+| POST   | /api/auth/login         | Admin login          |
+| GET    | /api/auth/me            | Get current user     |
+| POST   | /api/posts              | Create post          |
+| PUT    | /api/posts/:id          | Update post          |
+| DELETE | /api/posts/:id          | Delete post          |
+| POST   | /api/categories         | Create category      |
+| PUT    | /api/categories/:id     | Update category      |
+| DELETE | /api/categories/:id     | Delete category      |
+| DELETE | /api/comments/:id       | Delete comment       |
+
+---
+
+## Seed Scripts
+
+```bash
+# Populate demo data
+npm run seed
+
+# Clear all data and re-seed
+npm run seed:reset
+```
+
+The seed script creates:
+- 1 admin user
+- 5 categories
+- 8 blog posts with realistic content
+- Comments on 3 posts
+
+---
+
+## Environment Variables
+
+### server/.env.template
+| Variable       | Description                          | Default              |
+|----------------|--------------------------------------|----------------------|
+| PORT           | Server port                          | 5000                 |
+| MONGO_URI      | MongoDB connection string            | localhost/mern_blog  |
+| JWT_SECRET     | Secret for signing JWT tokens        | —                    |
+| CLIENT_URL     | Frontend URL (for CORS in dev)       | http://localhost:5173|
+| NODE_ENV       | Environment                          | development          |
+| ADMIN_EMAIL    | Default admin email                  | admin@blog.com       |
+| ADMIN_PASSWORD | Default admin password               | Admin@123            |
+
+### client/.env.template
+| Variable           | Description          | Default                        |
+|--------------------|----------------------|--------------------------------|
+| VITE_API_BASE_URL  | Backend API base URL | http://localhost:5000/api      |
