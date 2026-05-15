@@ -61,9 +61,9 @@ export default function Sidebar({ open, onClose }) {
         <div className="p-4 border-t border-slate-100">
           <div className="flex items-center gap-3">
             <img
-              src={`https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(user?.name || 'User')}&backgroundColor=random`}
+              src={`https://picsum.photos/seed/${encodeURIComponent(user?.name || 'User')}/200/200`}
               alt={user?.name}
-              className="w-8 h-8 rounded-full ring-2 ring-primary-200"
+              className="w-8 h-8 rounded-full ring-2 ring-primary-200 object-cover"
             />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-slate-800 truncate">{user?.name}</p>

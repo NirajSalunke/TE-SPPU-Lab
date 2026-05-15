@@ -28,7 +28,7 @@ export const gradeColor = (grade) => {
 };
 
 export const avatarUrl = (seed = 'User') => {
-  return `https://api.dicebear.com/8.x/initials/svg?seed=${encodeURIComponent(seed)}&backgroundColor=random&fontSize=38&bold=true`;
+  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/200/200`;
 };
 
 export const capitalize = (str = '') => str.charAt(0).toUpperCase() + str.slice(1);
