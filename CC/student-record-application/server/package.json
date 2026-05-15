@@ -1,0 +1,25 @@
+{
+  "name": "srms-server",
+  "version": "1.0.0",
+  "description": "Student Record Management System — Backend API",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "seed": "node --env-file=.env seeds/index.js",
+    "seed:fresh": "node --env-file=.env seeds/index.js --fresh"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.1"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "nodemon": "^3.1.3"
+  }
+}

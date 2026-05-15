@@ -1,240 +1,250 @@
-<h1 align="center">
-    SCHOOL MANAGEMENT SYSTEM
-</h1>
+# 🎓 SRMS — Student Record Management System
 
-<h3 align="center">
-Streamline school management, class organization, and add students and faculty.<br>
-Seamlessly track attendance, assess performance, and provide feedback. <br>
-Access records, view marks, and communicate effortlessly.
-</h3>
+A full-stack MERN application for managing student academic records — departments, courses, enrolments, grades, and attendance.
 
-<p>
-  <a href="https://youtu.be/ol650KwQkgY?si=rKcboqSv3n-e4UbC">Youtube Video</a>
-</p>
+**Stack:** React 18 + Vite + Tailwind CSS · Express 4 · MongoDB Atlas · JWT Auth
 
-<p>
-  <a href="https://www.linkedin.com/in/yogndrr/">LinkedIn</a>
-</p>
+---
 
-
-# About
-
-The School Management System is a web-based application built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. It aims to streamline school management, class organization, and facilitate communication between students, teachers, and administrators.
-
-## Features
-
-- **User Roles:** The system supports three user roles: Admin, Teacher, and Student. Each role has specific functionalities and access levels.
-
-- **Admin Dashboard:** Administrators can add new students and teachers, create classes and subjects, manage user accounts, and oversee system settings.
-
-- **Attendance Tracking:** Teachers can easily take attendance for their classes, mark students as present or absent, and generate attendance reports.
-
-- **Performance Assessment:** Teachers can assess students' performance by providing marks and feedback. Students can view their marks and track their progress over time.
-
-- **Data Visualization:** Students can visualize their performance data through interactive charts and tables, helping them understand their academic performance at a glance.
-
-- **Communication:** Users can communicate effortlessly through the system. Teachers can send messages to students and vice versa, promoting effective communication and collaboration.
-
-## Technologies Used
-
-- Frontend: React.js, Material UI, Redux
-- Backend: Node.js, Express.js
-- Database: MongoDB
-
-<br>
-
-# Installation
-
-Clone the project:
+## 📁 Project Structure
 
 ```
-git clone https://github.com/Yogndrr/MERN-School-Management-System.git
+student-record-application/
+├── client/          # React frontend (Vite + Tailwind)
+└── server/          # Express backend API
 ```
 
-There are three branches in this repository. Each serves a different purpose.
+---
 
-`main` contains the work that reflects my current standards. I am rebuilding the project architecture here with updated patterns, cleaner structure, and better practices than the original version.
+## ⚡ Local Development
 
-`community-version` collects community contributions and external PRs. It stays separate from main while I rebuild the core.
+### 1. Clone & configure
 
-`legacy-version` contains the same code shown in the YouTube tutorial. If you came from the video and want the exact version demonstrated there, switch to this branch after cloning.
-Open a terminal and paste this command to switch to the `legacy-version` branch. But if you want to try the latest one then you can stay in the main branch.
-
-```
-git checkout legacy-version
-```
-
-Open two terminals.
-
-Backend setup:
-
-```
-cd backend
-npm install
+```bash
+# Backend
+cd server
+cp .env.example .env
+# Fill in MONGO_URI (Atlas connection string) and JWT_SECRET
 ```
 
-Create a .env file in the backend folder. Add the following:
-
-```
-MONGO_URL = mongodb://127.0.0.1/smsproject
-
-SECRET_KEY = 'secret123key'
-```
-
-Fill MONGO_URL using the instructions below. SECRET_KEY is any random string.
-
-Start the backend:
-
-```
-npm start
+```bash
+# Frontend
+cd client
+cp .env.example .env
+# VITE_API_BASE_URL defaults to /api (Vite proxies to localhost:5000)
 ```
 
-Frontend setup:
+### 2. Install dependencies
 
-```
-cd frontend
-npm install
-```
-
-Create a .env file in the frontend folder and add:
-
-```
-REACT_APP_BASE_URL=http://localhost:5000
+```bash
+cd server && npm install
+cd ../client && npm install
 ```
 
-If a .env file already exists and the line is commented out, remove the comment.
+### 3. Seed the database
 
-```
-npm start
-```
-
-Frontend runs at localhost:3000. Backend runs at localhost:5000.
-
-# MONGO_URL instructions
-
-Use one of these two methods depending on whether you want a local development database or a cloud database.
-
-## Option 1 — Local MongoDB
-
-You need two components: the MongoDB server and Compass.
-
-Install MongoDB Community Server from <a href="https://mongodb.com/try/download/community">mongodb.com/try/download/community</a>. This install includes the mongod server. Install Compass from <a href="https://mongodb.com/try/download/compass">mongodb.com/try/download/compass</a>..
-
-Start the MongoDB service. On Windows or macOS the installer usually sets it to run automatically. If it is not running, you can start it manually:
-
-```
-mongod
+```bash
+cd server
+npm run seed           # Seeds with demo data
+# Or for a fresh start:
+npm run seed:fresh     # Drops all collections, then re-seeds
 ```
 
-Open Compass. Connect using:
-
+**Default Admin Login:**
 ```
-mongodb://127.0.0.1:27017/yourdbname
-```
-
-Replace yourdbname with any name. Use that full connection string as your MONGO_URL.
-
-## Option 2 — MongoDB Atlas (cloud)
-
-Create an Atlas account at <a href="https://mongodb.com/atlas">mongodb.com/atlas</a> and create a free cluster.
-
-In the cluster page, select:
-
-Database → Connect → Connect your application
-
-Atlas shows you a connection string:
-
-```
-mongodb+srv://<user>:<password>@<cluster-url>/<dbname>?retryWrites=true&w=majority
+Email:    admin@srms.edu
+Password: Admin@1234
 ```
 
-Replace the placeholders. Use that full string as your MONGO_URL.
+### 4. Run locally (2 terminals)
 
-Use Atlas if you plan to deploy the project.
+```bash
+# Terminal 1 — Backend (port 5000)
+cd server && npm run dev
 
-# Branch selection
-
-If you are learning from the YouTube video and want the same project the tutorial was based on, use legacy-version.
-
-If you want the original project but also want to apply new changes yourself, stay on legacy-version and modify it as needed.
-
-If you want the updated architecture, use main. This is under active development and contains major improvements.
-
-If you want to contribute, use community-version. All external PRs land there.
-
-# Deployment
-
-There are multiple ways to deploy the project. Use any combination depending on how you prefer to manage the client and server.
-
-## Deploying the backend
-
-### Render
-
-Render works well for Express-based APIs and requires almost no infrastructure setup.
-
-1. Push your code to GitHub.
-2. Create a new Web Service in Render.
-3. Select your backend folder as the root.
-4. Set the build command to:
-
-```
-npm install
+# Terminal 2 — Frontend (port 5173 with HMR)
+cd client && npm run dev
 ```
 
-5. Set the start command to:
+Open: **http://localhost:5173**
 
+---
+
+## ☁️ AWS EC2 Deployment (using `screen`)
+
+> **Architecture:** Express serves the built React app as static files.  
+> One process, one port, one `screen` session — no Nginx, no PM2 needed.
+
+### Step 1 — Launch EC2 & install Node 24
+
+```bash
+# On EC2 (Ubuntu 22.04 recommended)
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+sudo apt-get install -y nodejs git
+
+# Verify
+node -v   # should show v24.x.x
+npm -v
 ```
-npm start
+
+### Step 2 — Clone the repository
+
+```bash
+git clone <your-repo-url> srms
+cd srms
 ```
 
-6. Add the required environment variables from your .env file (MONGO_URL and SECRET_KEY).
+### Step 3 — Configure environment variables
 
-Render automatically redeploys on every push.
-
-## Deploying the frontend
-
-### Netlify
-
-Netlify builds and serves the React application.
-
-Steps:
-
-1. Push your frontend folder to GitHub.
-2. Create a new Netlify project.
-3. Set the build command:
-
+```bash
+# Backend
+cd server
+cp .env.example .env
+nano .env
 ```
+
+Edit `.env`:
+```env
+PORT=5000
+MONGO_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/srms?retryWrites=true&w=majority
+JWT_SECRET=your_super_long_random_secret_here_change_this
+JWT_EXPIRES_IN=7d
+NODE_ENV=production
+```
+
+```bash
+# Frontend — set the backend URL to your EC2 public IP
+cd ../client
+cp .env.example .env
+nano .env
+```
+
+Edit `.env`:
+```env
+VITE_API_BASE_URL=http://<EC2-PUBLIC-IP>:5000/api
+```
+
+### Step 4 — Install dependencies
+
+```bash
+cd ~/srms/server && npm install --omit=dev
+cd ~/srms/client && npm install
+```
+
+### Step 5 — Build the frontend
+
+```bash
+cd ~/srms/client
 npm run build
+# Outputs to client/dist/ — Express will serve this in production
 ```
 
-4. Set the publish directory:
+### Step 6 — Seed the database
 
-```
-build
-```
-
-5. Add an environment variable if needed for the API endpoint:
-
-```
-REACT_APP_BASE_URL=https://your-backend-url
+```bash
+cd ~/srms/server
+npm run seed
 ```
 
-Netlify auto-builds on every push.
+### Step 7 — Start with `screen`
 
-### Vercel
+```bash
+# Create a named screen session
+screen -S srms
 
-Vercel deploys React-based frontends easily. Same build command. Same publish directory.
+# Inside the screen session, start the server
+cd ~/srms/server
+node server.js
 
-## Connecting frontend and backend
-
-After deploying both sides, set the frontend environment variable to point to your backend URL. For example:
-
+# Detach from screen: press Ctrl+A, then D
+# The server keeps running in background
 ```
-REACT_APP_BASE_URL=https://your-backend.onrender.com
+
+**Access the app:** `http://<EC2-PUBLIC-IP>:5000`
+
+> ⚠️ Make sure EC2 Security Group allows inbound TCP on port **5000** from `0.0.0.0/0`
+
+---
+
+## 🖥️ Useful `screen` Commands
+
+| Command | What it does |
+|---|---|
+| `screen -S srms` | Create a new screen named "srms" |
+| `Ctrl+A, D` | Detach from screen (app keeps running) |
+| `screen -r srms` | Re-attach to screen |
+| `screen -ls` | List all screens |
+| `screen -X -S srms quit` | Kill the screen session |
+
+---
+
+## 🔄 Updating the Application on EC2
+
+```bash
+# 1. Pull latest code
+cd ~/srms
+git pull
+
+# 2. Rebuild frontend
+cd client && npm install && npm run build
+
+# 3. Restart server
+screen -r srms
+# Ctrl+C to stop
+node ~/srms/server/server.js
+# Ctrl+A, D to detach
 ```
 
-Rebuild the frontend when deploying to Netlify or Vercel.
+---
 
-# Notes
+## 🔐 Default Credentials (after seeding)
 
-The legacy-version branch remains available for anyone who needs the original two-year-old tutorial code. The main branch will continue to evolve as I rebuild the project's architecture using the practices I use today. The community-version branch is available for contributions without affecting the core redesign.
+| Role | Email | Password |
+|---|---|---|
+| Admin | admin@srms.edu | Admin@1234 |
+| Faculty | arjun.mehta@srms.edu | Faculty@1234 |
+| Faculty | kavitha.rao@srms.edu | Faculty@1234 |
+
+---
+
+## 🌱 Seed Data Summary
+
+| Entity | Count |
+|---|---|
+| Departments | 5 (CS, IT, ECE, ME, CE) |
+| Users | 1 Admin + 4 Faculty |
+| Courses | 15 across departments |
+| Students | 40 with realistic data |
+| Enrolments | ~120+ with mixed grades |
+| Attendance | 30 days of records |
+
+---
+
+## 🛠️ npm Scripts
+
+### Server (`/server`)
+```bash
+npm run dev          # Start with nodemon (hot-reload)
+npm run start        # Start production server
+npm run seed         # Seed database with demo data
+npm run seed:fresh   # Drop all + re-seed
+```
+
+### Client (`/client`)
+```bash
+npm run dev          # Vite dev server (port 5173)
+npm run build        # Build for production → dist/
+npm run preview      # Preview production build locally
+```
+
+---
+
+## 🔌 API Base URL Configuration
+
+- **Local dev:** Vite proxies `/api` → `http://localhost:5000` automatically (no `.env` change needed)
+- **Production (EC2):** Set `VITE_API_BASE_URL=http://<EC2-IP>:5000/api` in `client/.env` before running `npm run build`
+- Only the `.env` file needs to change — zero code changes needed between environments
+
+---
+
+*Built with ❤️ — MERN Stack · MongoDB Atlas · AWS EC2 · `screen`*
