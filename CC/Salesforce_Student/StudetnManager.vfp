@@ -1,0 +1,70 @@
+<apex:page controller="StudentController" showHeader="true" sidebar="true">
+    <apex:form >
+        <apex:messages id="msgs" />
+
+        <!-- Form Block — id="formBlock" is REQUIRED for rerender to work -->
+        <apex:pageBlock title="Student Record Management" id="formBlock">
+            <apex:pageBlockSection title="Student Details" columns="2">
+
+                <apex:inputField value="{!student.Name}"        label="Student Name"/>
+                <apex:inputField value="{!student.Roll_No__c}"  label="Roll No"     />
+                <apex:inputField value="{!student.Class__c}"    label="Class"        />
+                <apex:inputField value="{!student.Mobile_No__c}" label="Mobile No"  />
+
+            </apex:pageBlockSection>
+
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton value="Save"
+                    action="{!saveStudent}"
+                    rerender="formBlock,studentTable,msgs"/>
+                <apex:commandButton value="New"
+                    action="{!newStudent}"
+                    rerender="formBlock"
+                    immediate="true"/>
+            </apex:pageBlockButtons>
+        </apex:pageBlock>
+
+        <!-- Student List Table -->
+        <apex:pageBlock title="Student List" id="studentTable">
+            <apex:pageBlockTable value="{!studentList}" var="s">
+
+                <apex:column headerValue="Student Name">
+                    <apex:outputText value="{!s.Name}"/>
+                </apex:column>
+
+                <apex:column headerValue="Roll No">
+                    <apex:outputText value="{!s.Roll_No__c}"/>
+                </apex:column>
+
+                <apex:column headerValue="Class">
+                    <apex:outputText value="{!s.Class__c}"/>
+                </apex:column>
+
+                <apex:column headerValue="Mobile No">
+                    <apex:outputText value="{!s.Mobile_No__c}"/>
+                </apex:column>
+
+                <apex:column headerValue="Actions">
+                    <apex:commandLink value="Edit"
+                        action="{!editStudent}"
+                        rerender="formBlock,studentTable,msgs"
+                        immediate="true">
+                        <apex:param name="studentId"
+                            value="{!s.Id}"
+                            assignTo="{!selectedStudentId}"/>
+                    </apex:commandLink>
+                    &nbsp;|&nbsp;
+                    <apex:commandLink value="Delete"
+                        action="{!deleteStudent}"
+                        rerender="formBlock,studentTable,msgs">
+                        <apex:param name="studentId"
+                            value="{!s.Id}"
+                            assignTo="{!selectedStudentId}"/>
+                    </apex:commandLink>
+                </apex:column>
+
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+
+    </apex:form>
+</apex:page>
